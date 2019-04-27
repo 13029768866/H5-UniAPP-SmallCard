@@ -20,6 +20,14 @@
 					"scrollIndicator": "none"
 				}
 			}
+		},
+		{
+			"path":"pages/pay/pay",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
 		}
 	],
 	"globalStyle": {

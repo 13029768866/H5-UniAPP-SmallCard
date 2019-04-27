@@ -12,7 +12,7 @@
 	}
 </script>
 
-<style>
+<style>	
 	/*每个页面公共css */
 	*,
 	*:before,
@@ -24,5 +24,23 @@
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
-	}	
+	}
+	/* 通用颜色 */
+	.white{
+		color:#fff!important;
+	}
+	.baseBlue{
+		color: #4E6CF3;
+	}
+	.moneyGreen{
+		font-weight: 700;
+		color: #7AB363;
+	}
+	.baseGray{
+		color: #919090;
+	}
+	/* 通用边距 */
+	.ml20{
+		margin-left: 20upx;
+	}
 </style>
