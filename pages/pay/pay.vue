@@ -107,7 +107,7 @@ export default{
 		/* 选择支付类型前验证 */
 		chooseValidation(){			
 			if(this.money === ''){				
-				uni.showToast( {title:"请输入金额!",icon:"none"})
+				uni.showToast( {title:"请输入金额!"})
 			}
 		},
 		getQueryVariable(variable){	
