@@ -13,6 +13,11 @@
 </script>
 
 <style>	
+	uni-checkbox .uni-checkbox-input{
+		border-radius: 50%!important;
+		width: 40upx;
+		height: 40upx;
+	}
 	/*每个页面公共css */
 	*,
 	*:before,

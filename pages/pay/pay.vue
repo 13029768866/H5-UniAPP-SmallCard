@@ -108,10 +108,15 @@ export default{
 		chooseValidation(){			
 			if(this.money === ''){				
 				uni.showToast( {title:"请输入金额!",icon:"none"})
+			}else{
+				uni.redirectTo({
+					url:'/pages/payTrading/payTrading'
+				})
 			}
 		},
 		getQueryVariable(variable){	
 			console.log(1)
+			console.log(window.location)
 		   var query = window.location.search.substring(1);
 		   console.log(window.location)
 		   var vars = query.split("&");

@@ -28,6 +28,14 @@
 					"titleNView": false
 				}
 			}
+		},
+		{
+			"path":"pages/payTrading/payTrading",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
 		}
 	],
 	"globalStyle": {

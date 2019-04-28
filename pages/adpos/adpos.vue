@@ -24,6 +24,7 @@
 					<label 
 						v-for="item in items"
 						:key = "item.value"
+						class="ad_choose"
 					>
 						<checkbox :value="item.value" :checked="item.checked"/>{{item.name}}
 					</label>
@@ -38,16 +39,22 @@
 				</view>
 				
 				<radio-group class="choose_days" @change="chooseAdDay">
-					<label  v-for="(time, index) in times" :key="time.value">						
+					<label  
+						v-for="(time, index) in times" 
+						:key="time.value"
+						>						
 							<view>
 								<radio 
 								style="display: none;"
 								:value="time.value" 
-								:checked="index === current" />
+								:checked="index === current" 
+								ref="radioChecked"
+							/>
 							</view>
 							<view 
 								class="choose_days_item"
 								:class="{white: index === current}"
+								ref = "moneyCheck"
 							>								
 								<image 
 									v-show=" time.days >5 && time.days<20 ?true: false"	
@@ -119,6 +126,7 @@
 					name:'启动海报'
 				}
 				],
+				currentChecked: '',
 				/* 价格结算信息提示 */
 				adPosType:'',
 				adPosDays:3	,
@@ -176,10 +184,22 @@
 				/* 选择多项时价格 */
 				values.length >= 2 ?this.newPrice = true:this.newPrice = false;	
 				
+				/* dom操作解决bug */
+				this.$refs.radioChecked.map((item,idx) =>{
+					if(item.checked === true){
+						this.currentChecked = idx;
+						// console.log(this.current)
+					}					
+				})
+				// console.log(this.$refs.moneyCheck)
+				setTimeout(()=>{
+					this.adPosMoney = this.$refs.moneyCheck[this.currentChecked].$children[3].$children[0].$el.innerText
+				},50)
+				
+				
 				items.map(item =>{
 					if(values.includes(item.value)){
-						this.$set(item,'checked',true)	
-						this.adPosMoney += 0;
+						this.$set(item,'checked',true)							
 					}else{
 						this.$set(item,'checked',false)
 					}
@@ -217,11 +237,13 @@
 
 <style lang="stylus">
 
+
 scroll-view ::-webkit-scrollbar{
 	   width: 0;
 	   height: 0;
 	   color: transparent;
-	}	
+}
+
 page, .adpos	
 	background:rgba(246,247,251,1);
 	overflow: hidden;
@@ -249,8 +271,7 @@ page, .adpos
 				width: 670upx;
 				overflow: hidden;
 	/* 广告选择区域 */
-	.ad_select_wrapper
-		
+	.ad_select_wrapper		
 		height: 164upx;
 		background-color: #fff;
 		margin-bottom: 15upx;
@@ -261,8 +282,15 @@ page, .adpos
 				color #8F8F8F
 				margin-left: 15upx;
 		.check_type
+			display: flex;
+			align-items: center;
 			margin-top: 20upx;
-			font-size: 26upx;														
+			font-size: 26upx;
+			.ad_choose
+				display: flex;
+				align-items: center;
+				&:nth-child(1)
+					margin-right: 90upx;
 	/* 推广时间 */
 	.choose_time_wrapper		
 		height: 259upx;

@@ -117,7 +117,7 @@ export default {
 			options = {}
 		}
 		options.url = url
-		options.data = data
+		options.data = data		
 		options.method = 'GET'  
 		return this.request(options)
 	},
