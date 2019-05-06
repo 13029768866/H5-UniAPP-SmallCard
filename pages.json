@@ -1,6 +1,6 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
+		{	// 金融圈首页
 			"path": "pages/index/index",
 			"style": {
 				"app-plus": {
@@ -9,10 +9,10 @@
 				}
 			}
 		},
-		{
+		{	//	组件测试页面
 			"path": "pages/demo/demo"
 		},
-		{
+		{	//	金融圈广告页
 			"path": "pages/adpos/adpos",
 			"style": {
 				"app-plus": {
@@ -21,7 +21,7 @@
 				}
 			}
 		},
-		{
+		{	//	信用卡套现首页
 			"path":"pages/pay/pay",
 			"style":{
 				"app-plus":{
@@ -29,8 +29,24 @@
 				}
 			}
 		},
-		{
+		{	//	信用卡套现交易页	
 			"path":"pages/payTrading/payTrading",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
+		{	//	信用卡代还通道页	
+			"path":"pages/repayments/repayments",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
+		{	//	会员中心	
+			"path":"pages/memberCenter/memberCenter",
 			"style":{
 				"app-plus":{
 					"titleNView": false

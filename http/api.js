@@ -26,8 +26,18 @@ export const bindCards = (data,header) => {
 		header
 	});
 }
+/* 绑卡接口 */
+export const payUpGrade = (data,header) => {
+	return http.request({
+		url: '/upGrade-controller/payUpGrade',
+		method: 'GET',
+		data,
+		header
+	});
+}
 // 默认全部导出  import api from '@/http/api.js'
 export default {
 	erweima,
-    bindCards	
+    bindCards,
+	payUpGrade
 }
