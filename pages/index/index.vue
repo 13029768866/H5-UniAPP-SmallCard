@@ -913,7 +913,7 @@ page, .index
 	.swiper-box		
 		height: 100%;
 		.brands_wrapper_box{			
-			height: 80%;		
+			height: 80vh;		
 		}
 	/* 顶部tabbar */
 	.nav-bar{

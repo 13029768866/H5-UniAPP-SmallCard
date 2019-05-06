@@ -178,7 +178,7 @@
 				 if(this.adPosType === ','){
 					 this.adPosType = ''
 				 }
-				
+					
 				let items = this.items,
 					values = e.detail.value;
 				/* 选择多项时价格 */

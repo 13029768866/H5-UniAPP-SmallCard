@@ -8,6 +8,7 @@
 			@refresh="onPulldownReresh"
 		>
 		<button type="primary" @click="sendReqHot">请求测试</button>
+		<button type="primary" @click="sendReq">请求超英</button>
 				<view class="scroll-wrapper">
 					<view 
 						class="list-item"
@@ -70,11 +71,27 @@
 				this.loadData('refresh');				
 			},
 			async sendReq(){
-				let res = await this.$api.banner({qq:'466481615'});
+				let res = await this.$api.banner({qq:'466481615'},{
+			'Content-Type':'application/x-www-form-urlencoded',
+			'appType':'Android',
+			'phoneNo':'18771866666',
+			'orgId':'80002',
+			'ipAddress': '192.168.0.194',
+			'version': 'version',
+			'txnDattime':'20190428192138',
+			'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiJkOGo2aHkiLCJzdWIiOiIxMDAwMDAzMyIsImV4cCI6MTU1NzA1MTIwOCwiaWF0IjoxNTU2NDQ2NDA4fQ.c8BiYicYAo9M_SD5TL-LJbLpJzgT8wWSX3mjXRh5GA5MFinGlYX8eJR5lQK3RywCbN2WC5r7ZdthPYazju6Llw'}	);
 				console.log(res)
-			},
+			},			
 			async sendReqHot(){
-				let res = await this.$api.hot({qq:'466481615',type:'superhero'})
+				let res = await this.$api.erweima({},{
+						'Content-Type':'application/json;charset=UTF-8',
+						'appType':'Android',
+						'phoneNo':'18771866669',
+						'orgId':'80017',
+						'ipAddress': '192.168.0.194',
+						'version': 'version',
+						'txnDattime':'20190429100913',
+						'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'})
 				console.log(res)
 			}
 		},
