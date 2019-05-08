@@ -170,7 +170,7 @@ export default{
 				'txnDattime':'20190429100913',
 				'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
 				},
-				debitList: [1],	/*借记卡列表*/
+				debitList: [],	/*借记卡列表*/
 				/*贷记卡列表 */
 				creditList:[
 					{
@@ -194,9 +194,9 @@ export default{
 	},
 	methods: {
 		/* 页面初始化操作 */
-		init(){
-			console.log(1)
-			this.getBankCards()
+		init(){						
+			this.getBankCards()	
+			this.getChannelList()
 		},
 		/* 弹窗显示 */
 		togglePopup(type) {
@@ -209,12 +209,24 @@ export default{
 			/* this.debitList= res.data.dataMap.DebitList
 			this.creditList= res.data.dataMap.CreditList */
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				// console.log(res.data.dataMap)				
+				console.log(res)				
 				/* this.debitList= res.data.dataMap.DebitList
 				this.creditList= res.data.dataMap.CreditList */
-				console.log(this.creditList,this.debitList)
-			}
-			
+				// console.log(this.creditList,this.debitList)
+			}			
+		},
+		/* 获取通道信息 */
+		async getChannelList(){
+			let res = await this.$api.channelList({proType:'payment'},this.userPhoneInfo)	
+			// console.log(res)			
+			/* this.debitList= res.data.dataMap.DebitList
+			this.creditList= res.data.dataMap.CreditList */
+			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+				console.log(res)				
+				/* this.debitList= res.data.dataMap.DebitList
+				this.creditList= res.data.dataMap.CreditList */
+				// console.log(this.creditList,this.debitList)
+			}			
 		},
 		/* 选择支付类型前验证 */
 		chooseValidation(){			

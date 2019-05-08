@@ -17,16 +17,31 @@ export const erweima = (data,header) => {
 		header
 	});
 }
-/* 绑卡接口 */
+/* 信用开套现首页接口start */
+/* 在线交易银行卡 */
 export const bindCards = (data,header) => {
 	return http.request({
 		url: '/card-controller/custCardList',
 		method: 'GET',
 		data,
 		header
+	}).catch((err)=>{
+		console.log(1)
 	});
 }
-/* 绑卡接口 */
+/* 在线交易通道 */
+export const channelList = (data,header) => {
+	return http.request({
+		url: '/product-controller/getTaoxianChannelList',
+		method: 'GET',
+		data,
+		header
+	}).catch((err)=>{
+		console.log(1)
+	});
+}
+/* 信用卡套现首页接口end */
+/* 会员升级 */
 export const payUpGrade = (data,header) => {
 	return http.request({
 		url: '/upGrade-controller/payUpGrade',
@@ -39,5 +54,6 @@ export const payUpGrade = (data,header) => {
 export default {
 	erweima,
     bindCards,
-	payUpGrade
+	payUpGrade,
+	channelList
 }

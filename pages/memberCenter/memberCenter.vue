@@ -16,12 +16,13 @@
 		<image 
 		class="my_privilege1"
 		src="../../static/member/my_privilege_des.png"></image>
-		<view 
-		class="pay_btn"
-		@click="getPayUpGrade"
+		<button 
+			class="pay_btn"
+			@click="getPayUpGrade"		
+			:disabled=btnStatus
 		>
 			￥398
-		</view>
+		</button>
 	</scroll-view>
 </template>
 
@@ -38,7 +39,8 @@
 				'version': 'version',
 				'txnDattime':'20190429100913',
 				'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
-				}			
+				},
+				btnStatus: false		
 			}			
 		},
 		onLoad() {
@@ -50,9 +52,9 @@
 					this.count++
 				},500)
 			},		
-			async getPayUpGrade(){
-				let res = await this.$api.payUpGrade({},this.userPhoneInfo)
-				console.log(res)
+			async getPayUpGrade(){				
+				let res = await this.$api.payUpGrade({},this.userPhoneInfo)			
+				this.btnStatus = true								
 				let url = res.data.dataMap.url
 				window.location.href = url
 			}
@@ -61,11 +63,17 @@
 </script>
 
 <style lang="stylus">
+// 隐藏滚动条
+scroll-view ::-webkit-scrollbar{
+       width: 0;
+       height: 0;
+       color: transparent;
+}
 page, .memberCenter
 	width: 100%;
 	height: 100%;
 	background-color: #fff;
-	overflow: hidden;
+	overflow: hidden;	
 	.vip_wrapper
 		position: relative;
 		width: 100vw;
@@ -111,4 +119,5 @@ page, .memberCenter
 		color: #fff;
 		background:rgba(220,184,153,1);
 		border-radius:48upx;
+		margin-bottom: 60upx;
 </style>
