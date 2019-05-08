@@ -305,7 +305,7 @@
 							<image src="../../static/hongbao.png" class="brands_image"></image>
 							<view class="brands_mid">
 								<view class="brands_mid_header">
-									<text class="brands_name ell">京东花呗套现</text>
+									<text class="brands_name ell">魏振江牛逼</text>
 									<text class="brands_zhiding">
 										<image src="../../static/zhiding.png" class="brands_zhiding"></image>
 									</text>
@@ -910,10 +910,11 @@ page, .index
 	overflow: hidden;
 	width: 100%;
 	height: 100%;
-	.swiper-box		
+	.swiper-box				
 		height: 100%;
 		.brands_wrapper_box{			
-			height: 80vh;		
+			margin-top: -5px;
+			height: 77.5vh;			
 		}
 	/* 顶部tabbar */
 	.nav-bar{
