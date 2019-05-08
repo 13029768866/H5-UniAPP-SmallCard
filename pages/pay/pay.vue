@@ -100,51 +100,32 @@
 				选择支付类型
 			</view>
 			<view class="choose_item_wrapper">
-				<view class="pay_choose_item" @click="chooseValidation">
+				<view 
+					class="pay_choose_item" 
+					@click="chooseValidation"
+					v-for="channel in channelList"
+					:key = "channel.sortId"
+					:style = "{
+						background:'url('+ channel.backimgUrl+')',
+						backgroundSize:'702upx,110upx',
+						backgroundRepeat:'no-repeat'
+					}"
+					
+				>
 					<view class="pay_type_img">
-						<image src="../../static/hongbao.png"></image>						
+						<image></image>						
 					</view>		
 					<view>
 						<view class="channel_type">
-							<text>小额银联落地</text>
-							<text class="channel_time">(00:00-23:59）</text>
+							<text>{{channel.proName}}</text>
+							<text class="channel_time">({{channel.openTime}}）</text>
 							<image class="integral" src="../../static/jifen.png"></image>
 						</view>
 						<view class="">
-							<text>单笔500 -20000元 费率0.57%+3.0／笔</text>
+							<text>{{channel.remark}}</text>
 						</view>
 					</view>								
-				</view>	
-				<view class="pay_choose_item" @click="chooseValidation">
-					<view class="pay_type_img">
-						<image src="../../static/hongbao.png"></image>						
-					</view>		
-					<view>
-						<view class="channel_type">
-							<text>小额银联落地</text>
-							<text class="channel_time">(00:00-23:59）</text>
-							<image class="integral" src="../../static/jifen.png"></image>
-						</view>
-						<view class="">
-							<text>单笔500 -20000元 费率0.57%+3.0／笔</text>
-						</view>
-					</view>								
-				</view>
-									<view class="pay_choose_item" @click="chooseValidation">
-										<view class="pay_type_img">
-											<image src="../../static/hongbao.png"></image>						
-										</view>		
-										<view>
-											<view class="channel_type">
-												<text>小额银联落地</text>
-												<text class="channel_time">(00:00-23:59）</text>
-												<image class="integral" src="../../static/jifen.png"></image>
-											</view>
-											<view class="">
-												<text>单笔500 -20000元 费率0.57%+3.0／笔</text>
-											</view>
-										</view>								
-									</view>
+				</view>														
 			</view>						
 		</scroll-view>
 	</view>
@@ -181,7 +162,8 @@ export default{
 						actNo: '6228480659116839674',
 						acName: '魏振江银行'
 					}
-				],	
+				],
+				channelList:[],
 				bankCardNum: '6228480659116839674'
 			}			
 	},
@@ -209,7 +191,7 @@ export default{
 			/* this.debitList= res.data.dataMap.DebitList
 			this.creditList= res.data.dataMap.CreditList */
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				console.log(res)				
+				// console.log(res)				
 				/* this.debitList= res.data.dataMap.DebitList
 				this.creditList= res.data.dataMap.CreditList */
 				// console.log(this.creditList,this.debitList)
@@ -223,9 +205,7 @@ export default{
 			this.creditList= res.data.dataMap.CreditList */
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 				console.log(res)				
-				/* this.debitList= res.data.dataMap.DebitList
-				this.creditList= res.data.dataMap.CreditList */
-				// console.log(this.creditList,this.debitList)
+				this.channelList = res.data.dataMap.channelList
 			}			
 		},
 		/* 选择支付类型前验证 */
@@ -344,20 +324,20 @@ page, .pay
 			border-left: 4upx solid #5294FE;
 			font-size: 28upx;
 			padding-left: 18upx;
-		.pay_choose_item
-			.integral
-				width: 98upx;
-				height: 38upx;
+		.pay_choose_item			
 			display: flex;			
 			align-items: center;
 			padding: 20upx;
 			width: 700upx;
-			height: 140upx;
+			height: 217upx;
 			font-size: 26upx;
 			margin-top: 12upx;
-			background: url('../../static/tdaol.png') no-repeat;
-			background-size: 700upx,140upx;	
-			color #fff
+			border: 1px solid #000;			
+			background-repeat:no-repeat;
+			color #000
+			.integral
+				width: 98upx;
+				height: 38upx;
 			.channel_type
 				display: flex;
 				align-items: center;
