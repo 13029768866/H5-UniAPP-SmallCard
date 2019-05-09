@@ -29,6 +29,14 @@
 				}
 			}
 		},
+		{	//	通道支持银行
+			"path":"pages/supportBank/supportBank",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
 		{	//	信用卡套现交易页	
 			"path":"pages/payTrading/payTrading",
 			"style":{

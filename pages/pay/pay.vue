@@ -20,7 +20,7 @@
 				<view class="pay_bank_name">
 					<image class="bank_img"></image>
 					<text class="ell">招商银行</text>
-					<image class="choose_img_default" src="../../static/bandi.png"></image>
+					<image class="choose_img_default" src="../../static/bandin.png"></image>
 				</view>
 				<view class="pay_bank_type">
 					信用卡
@@ -71,7 +71,7 @@
 				<view class="pay_bank_name">
 					<image class="bank_img"></image>
 					<text class="ell">**银行</text>
-					<image class="choose_img_default" src="../../static/bandi.png"></image>
+					<image class="choose_img_default" src="../../static/bandin.png"></image>
 				</view>
 				<view class="pay_bank_type">
 					储蓄卡
@@ -101,31 +101,46 @@
 			</view>
 			<view class="choose_item_wrapper">
 				<view 
-					class="pay_choose_item" 
-					@click="chooseValidation"
+					style="margin-top: 25upx;"
 					v-for="channel in channelList"
-					:key = "channel.sortId"
-					:style = "{
-						background:'url('+ channel.backimgUrl+')',
-						backgroundSize:'702upx,110upx',
-						backgroundRepeat:'no-repeat'
-					}"
-					
+					:key = "channel.proId"
 				>
-					<view class="pay_type_img">
-						<image></image>						
-					</view>		
-					<view>
-						<view class="channel_type">
-							<text>{{channel.proName}}</text>
-							<text class="channel_time">({{channel.openTime}}）</text>
-							<image class="integral" src="../../static/jifen.png"></image>
-						</view>
-						<view class="">
-							<text>{{channel.remark}}</text>
-						</view>
-					</view>								
-				</view>														
+					<!-- 通道信息展示 -->
+					<view 
+						class="pay_choose_item" 
+						@click="chooseValidation"						
+						:style = "{
+							background:'url('+ channel.backimgUrl+')',
+							backgroundSize:'695upx,110upx',
+							backgroundRepeat:'no-repeat'
+						}"
+						
+					>
+						<view class="pay_type_img">
+							<image></image>						
+						</view>		
+						<view>
+							<view class="channel_type">
+								<text>{{channel.proName}}</text>
+								<text class="channel_time">({{channel.openTime}}）</text>
+								<image  
+									v-if="channel.isIntegral == 1"
+									class="integral" 
+									src="../../static/jifen.png"></image>
+							</view>
+							<view class="">
+								<text>{{channel.remark}}{{channel.rate}}</text>
+							</view>
+						</view>								
+					</view>	
+					<!-- 支持银行 -->
+					<view 
+						class="support_bank_wrapper"
+						@click="supporBank(channel.proId)"
+					>
+						支持银行？
+					</view>
+				</view>													
 			</view>						
 		</scroll-view>
 	</view>
@@ -163,12 +178,11 @@ export default{
 						acName: '魏振江银行'
 					}
 				],
-				channelList:[],
-				bankCardNum: '6228480659116839674'
+				channelList:[]	/* 通道列表 */
+				
 			}			
 	},
-	onLoad(){
-		// this.getQueryVariable()
+	onLoad(){	
 		this.init()
 	},
 	computed: {
@@ -186,10 +200,7 @@ export default{
 		},
 		/* 获取银行卡信息 */
 		async getBankCards(){
-			let res = await this.$api.bindCards({},this.userPhoneInfo)	
-			// console.log(res)			
-			/* this.debitList= res.data.dataMap.DebitList
-			this.creditList= res.data.dataMap.CreditList */
+			let res = await this.$api.bindCards({},this.userPhoneInfo)				
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 				// console.log(res)				
 				/* this.debitList= res.data.dataMap.DebitList
@@ -199,14 +210,17 @@ export default{
 		},
 		/* 获取通道信息 */
 		async getChannelList(){
-			let res = await this.$api.channelList({proType:'payment'},this.userPhoneInfo)	
-			// console.log(res)			
-			/* this.debitList= res.data.dataMap.DebitList
-			this.creditList= res.data.dataMap.CreditList */
+			let res = await this.$api.channelList({proType:'payment'},this.userPhoneInfo)			
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				console.log(res)				
+				// console.log(res)				
 				this.channelList = res.data.dataMap.channelList
 			}			
+		},
+		/* 通道支持银行 */
+		supporBank(proId){			
+			uni.redirectTo({
+				url:'/pages/supportBank/supportBank?proId='+ proId 
+			})
 		},
 		/* 选择支付类型前验证 */
 		chooseValidation(){			
@@ -222,18 +236,8 @@ export default{
 			/* uni.redirectTo({
 				url:'/pages/payTrading/payTrading'
 			}) */
-		},
-		getQueryVariable(variable){				
-		   var query = window.location.search.substring(1);
-		   // console.log(window.location)
-		   var vars = query.split("&");
-		   for (var i=0;i<vars.length;i++) {
-				   var pair = vars[i].split("=");
-				   if(pair[0] == variable){return pair[1];}				   
-		   }
-		   // console.log(pair)
-		   return(false);
 		}
+		
 	}
 }
 </script>
@@ -318,23 +322,30 @@ page, .pay
 	.pay_type_choose
 		border: 1px solid #000;
 		height: 69%;
-		background-color: #fff;
+		background:rgba(242,242,247,1);
 		padding: 35upx 20upx 0 25upx;
 		.pay_choose_title
 			border-left: 4upx solid #5294FE;
 			font-size: 28upx;
 			padding-left: 18upx;
+		.support_bank_wrapper
+			width:695upx;
+			line-height:60upx;
+			text-align: center;
+			background:rgba(255,255,255,1);
+			box-shadow:0 6upx 18upx 0px rgba(38,143,214,0.2);
+			border-radius:0 0 10upx 10upx;
+			font-size: 26upx;
+			color:rgba(30,107,249,1);
 		.pay_choose_item			
 			display: flex;			
 			align-items: center;
 			padding: 20upx;
 			width: 700upx;
-			height: 217upx;
-			font-size: 26upx;
-			margin-top: 12upx;
-			border: 1px solid #000;			
-			background-repeat:no-repeat;
-			color #000
+			height: 138upx;
+			font-size: 26upx;			
+			// border: 1px solid #000;						
+			color #fff
 			.integral
 				width: 98upx;
 				height: 38upx;

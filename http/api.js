@@ -40,6 +40,17 @@ export const channelList = (data,header) => {
 		console.log(1)
 	});
 }
+/* 通道支持银行查询 */
+export const supporBank = (data,header) => {
+	return http.request({
+		url: '/product-controller/supporBank',
+		method: 'GET',
+		data,
+		header
+	}).catch((err)=>{
+		console.log(1)
+	});
+}
 /* 信用卡套现首页接口end */
 /* 会员升级 */
 export const payUpGrade = (data,header) => {
@@ -55,5 +66,6 @@ export default {
 	erweima,
     bindCards,
 	payUpGrade,
-	channelList
+	channelList,
+	supporBank
 }
