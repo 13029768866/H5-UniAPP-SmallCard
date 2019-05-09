@@ -79,9 +79,9 @@
 					<scroll-view scroll-y="true" class="choose_card_content">
 						<view 
 							class="choose_card_item"
-							v-for="item in debitList"
-							:key ="item.id"
-							@click="chooseCashCard"
+							v-for="(item,idx) in debitList"
+							:key ="item.idx"
+							@click="chooseCashCard()"
 						>
 							<image :src="item.cardLogo"></image>
 							<view class="choose_card_des">
@@ -267,7 +267,7 @@ export default{
 		},
 		/* 切换默认储蓄卡 */
 		chooseCashCard(e){
-			// console.log()
+			console.log(e)
 		}
 		
 	}
