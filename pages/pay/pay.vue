@@ -16,7 +16,9 @@
 		<!-- 信用卡，储蓄卡选择 -->
 		<view class="pay_bank_wrapper">
 			<!-- 未绑定信用卡默认 -->
-			<view class="pay_bank" v-if="creditList.length == 0">
+			<view 
+				class="pay_bank" 
+				v-if="creditList.length == 0">
 				<view class="pay_bank_name">
 					<image class="bank_img"></image>
 					<text class="ell">招商银行</text>
@@ -38,15 +40,15 @@
 				:key ="item.id"
 			>
 				<view class="pay_bank_name">
-					<image class="bank_img" src="../../static/hongbao.png"></image>
-					<text class="ell">{{item.acName}}</text>
+					<image class="bank_img" :src="item.cardLogo"></image>
+					<text class="ell">{{item.bankName}}</text>
 					<image class="choose_img" src="../../static/choose.png"></image>
 				</view>
 				<view class="pay_bank_type">
 					信用卡
 				</view>
 				<view class="pay_bank_num">
-					{{item.actNo.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}
+					{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}
 				</view>
 			</view>
 			<!-- 信用卡弹窗 -->
@@ -54,12 +56,38 @@
 				<view class="choose_card_wrapper">
 					<view class="choose_card_title">选择信用卡</view>
 					<scroll-view scroll-y="true" class="choose_card_content">
-						<view class="choose_card_item">
-							<image src="../../static/logo.png"></image>
+						<view 
+							class="choose_card_item"
+							v-for="item in creditList"
+							:key ="item.id"
+						>
+							<image :src="item.cardLogo"></image>
 							<view class="choose_card_des">
-								<text>招商银行</text>
+								<text>{{item.bankName}}</text>
 								<text>信用卡</text>
-								<text>6226*********6652</text>
+								<text>{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
+							</view>
+						</view>
+																
+					</scroll-view>											
+				</view>
+			</uni-popup>
+			<!-- 储蓄卡弹窗 -->
+			<uni-popup :show="type === 'bottom1'" position="bottom" mode="fixed"  @hidePopup="togglePopup('')">				
+				<view class="choose_card_wrapper">
+					<view class="choose_card_title">选择储蓄卡</view>
+					<scroll-view scroll-y="true" class="choose_card_content">
+						<view 
+							class="choose_card_item"
+							v-for="item in debitList"
+							:key ="item.id"
+							@click="chooseCashCard"
+						>
+							<image :src="item.cardLogo"></image>
+							<view class="choose_card_des">
+								<text>{{item.bankName}}</text>
+								<text>信用卡</text>
+								<text>{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
 							</view>
 						</view>
 																
@@ -67,7 +95,10 @@
 				</view>
 			</uni-popup>
 			<!-- 储蓄卡选择 -->
-			<view class="pay_bank" v-if="debitList.length == 0">
+			<view 
+				class="pay_bank" 
+				v-if="debitList.length == 0"			
+			>
 				<view class="pay_bank_name">
 					<image class="bank_img"></image>
 					<text class="ell">**银行</text>
@@ -80,17 +111,22 @@
 					********
 				</view>
 			</view>
-			<view v-else class="pay_bank">
+			<view v-else 
+				class="pay_bank"
+				v-for = "item in debitList.slice(0,1)"
+				:key ="item.id"
+				@click="togglePopup('bottom1')"
+			>
 				<view class="pay_bank_name">
-					<image class="bank_img" src="../../static/hongbao.png"></image>
-					<text class="ell">招商银行</text>
+					<image class="bank_img" :src="item.cardLogo"></image>
+					<text class="ell">{{item.bankName}}</text>
 					<image class="choose_img" src="../../static/choose.png"></image>
 				</view>
 				<view class="pay_bank_type">
-					信用卡
+					储蓄卡
 				</view>
 				<view class="pay_bank_num">
-					6226****6652
+					{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}
 				</view>
 			</view>
 		</view>
@@ -166,17 +202,9 @@ export default{
 				'txnDattime':'20190429100913',
 				'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
 				},
-				debitList: [],	/*借记卡列表*/
+				debitList: [],	/*储蓄卡列表*/
 				/*贷记卡列表 */
-				creditList:[
-					{
-						actNo: '6228480659116839674',
-						acName: '魏振江牛逼'
-					},
-					{
-						actNo: '6228480659116839674',
-						acName: '魏振江银行'
-					}
+				creditList:[					
 				],
 				channelList:[]	/* 通道列表 */
 				
@@ -202,9 +230,9 @@ export default{
 		async getBankCards(){
 			let res = await this.$api.bindCards({},this.userPhoneInfo)				
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				// console.log(res)				
-				/* this.debitList= res.data.dataMap.DebitList
-				this.creditList= res.data.dataMap.CreditList */
+				console.log(res)				
+				this.debitList= res.data.dataMap.DebitList
+				this.creditList= res.data.dataMap.CreditList
 				// console.log(this.creditList,this.debitList)
 			}			
 		},
@@ -236,6 +264,10 @@ export default{
 			/* uni.redirectTo({
 				url:'/pages/payTrading/payTrading'
 			}) */
+		},
+		/* 切换默认储蓄卡 */
+		chooseCashCard(e){
+			// console.log()
 		}
 		
 	}
