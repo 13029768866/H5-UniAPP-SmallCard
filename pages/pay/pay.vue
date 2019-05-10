@@ -261,9 +261,9 @@ export default{
 				uni.showToast( {title:"请先绑定一张到账储蓄卡，及一张信用卡!",icon:"none"})
 				return;
 			}			
-			/* uni.redirectTo({
+			uni.redirectTo({
 				url:'/pages/payTrading/payTrading'
-			}) */
+			})
 		},
 		/* 切换储蓄卡 */
 		chooseCashCard(e){			
