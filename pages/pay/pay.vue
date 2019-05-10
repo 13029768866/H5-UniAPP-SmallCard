@@ -58,8 +58,9 @@
 					<scroll-view scroll-y="true" class="choose_card_content">
 						<view 
 							class="choose_card_item"
-							v-for="item in creditList"
-							:key ="item.id"
+							v-for="(item,idx) in creditList"
+							:key ="item.idx"
+							@click="chooseCreditCard(idx)"
 						>
 							<image :src="item.cardLogo"></image>
 							<view class="choose_card_des">
@@ -81,7 +82,7 @@
 							class="choose_card_item"
 							v-for="(item,idx) in debitList"
 							:key ="item.idx"
-							@click="chooseCashCard()"
+							@click="chooseCashCard(idx)"
 						>
 							<image :src="item.cardLogo"></image>
 							<view class="choose_card_des">
@@ -259,15 +260,20 @@ export default{
 			if(this.creditList.length < 1 || this.debitList.length < 1){
 				uni.showToast( {title:"请先绑定一张到账储蓄卡，及一张信用卡!",icon:"none"})
 				return;
-			}
-			/* uni.showToast( {title:"成功!",icon:"success"}) */
+			}			
 			/* uni.redirectTo({
 				url:'/pages/payTrading/payTrading'
 			}) */
 		},
-		/* 切换默认储蓄卡 */
-		chooseCashCard(e){
-			console.log(e)
+		/* 切换储蓄卡 */
+		chooseCashCard(e){			
+			this.debitList.unshift(this.debitList.splice(e,1)[0])
+			this.togglePopup('')			
+		},
+		/* 切换信用卡 */
+		chooseCreditCard(e){
+			this.creditList.unshift(this.creditList.splice(e,1)[0])
+			this.togglePopup('')
 		}
 		
 	}
