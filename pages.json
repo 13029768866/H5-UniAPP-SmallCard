@@ -53,7 +53,7 @@
 				}
 			}
 		},
-		{	//	会员中心	
+		{	//	会员升级	
 			"path":"pages/memberCenter/memberCenter",
 			"style":{
 				"app-plus":{

@@ -60,6 +60,11 @@
 							class="choose_card_item"
 							v-for="(item,idx) in creditList"
 							:key ="item.idx"
+							:style = "{																
+								background:'url('+ item.bankBg+')',
+								backgroundSize:'705upx,180upx',
+								backgroundRepeat:'no-repeat'
+							}"
 							@click="chooseCreditCard(idx)"
 						>
 							<image :src="item.cardLogo"></image>
@@ -83,6 +88,11 @@
 							v-for="(item,idx) in debitList"
 							:key ="item.idx"
 							@click="chooseCashCard(idx)"
+							:style = "{																
+								background:'url('+ item.bankBg+')',
+								backgroundSize:'705upx,180upx',
+								backgroundRepeat:'no-repeat'
+							}"
 						>
 							<image :src="item.cardLogo"></image>
 							<view class="choose_card_des">
@@ -96,6 +106,7 @@
 				</view>
 			</uni-popup>
 			<!-- 储蓄卡选择 -->
+			<!-- 未绑定储蓄卡 -->
 			<view 
 				class="pay_bank" 
 				v-if="debitList.length == 0"			
@@ -112,9 +123,10 @@
 					********
 				</view>
 			</view>
+			<!-- 绑定储蓄卡 -->
 			<view v-else 
 				class="pay_bank"
-				v-for = "item in debitList.slice(0,1)"
+				v-for = "item in debitListDefault"
 				:key ="item.id"
 				@click="togglePopup('bottom1')"
 			>
@@ -145,7 +157,7 @@
 					<!-- 通道信息展示 -->
 					<view 
 						class="pay_choose_item" 
-						@click="chooseValidation"						
+						@click="chooseValidation(channel.proId)"						
 						:style = "{
 							background:'url('+ channel.backimgUrl+')',
 							backgroundSize:'695upx,110upx',
@@ -191,8 +203,9 @@ export default{
 	},
 	data(){
 		return {
-			type: '',
-			money: '',
+			type: '',	/* 弹窗类型 */
+			money: '',	/* 金额 */
+			proId: '',	/* 通道 id */
 			/* header携带参数，url获取 */
 			userPhoneInfo:{				
 				'appType':'Android',
@@ -204,9 +217,9 @@ export default{
 				'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
 				},
 				debitList: [],	/*储蓄卡列表*/
-				/*贷记卡列表 */
-				creditList:[					
-				],
+				debitListDefault:[],
+				creditList:[],/*贷记卡列表 */					
+				creditListDefault:[],
 				channelList:[]	/* 通道列表 */
 				
 			}			
@@ -231,9 +244,11 @@ export default{
 		async getBankCards(){
 			let res = await this.$api.bindCards({},this.userPhoneInfo)				
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				console.log(res)				
+				// console.log(res)				
 				this.debitList= res.data.dataMap.DebitList
 				this.creditList= res.data.dataMap.CreditList
+				this.debitListDefault = this.debitList.slice(0,1)
+				this.creditListDefault = this.creditList.slice(0,1)
 				// console.log(this.creditList,this.debitList)
 			}			
 		},
@@ -245,34 +260,50 @@ export default{
 				this.channelList = res.data.dataMap.channelList
 			}			
 		},
+		/* 点击通道 */
+		async getcardAuthentication(){
+			let res = await this.$api.cardAuthentication({
+				proId: this.proId,
+				amount: this.money,
+				paycardNo: this.creditListDefault[0].actNo,
+				rePayCardNo:this.debitListDefault[0].actNo,
+				client_ip:'123'
+			},this.userPhoneInfo)			
+			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+				// console.log(res)								
+			}			
+		},
 		/* 通道支持银行 */
 		supporBank(proId){			
 			uni.redirectTo({
 				url:'/pages/supportBank/supportBank?proId='+ proId 
 			})
-		},
+		},		
 		/* 选择支付类型前验证 */
-		chooseValidation(){			
-			if(this.money === ''){				
+		chooseValidation(e){			
+			if(this.money === ''){					
 				uni.showToast( {title:"请输入金额!",icon:"none"})
 				return;
 			}
 			if(this.creditList.length < 1 || this.debitList.length < 1){
 				uni.showToast( {title:"请先绑定一张到账储蓄卡，及一张信用卡!",icon:"none"})
 				return;
-			}			
-			uni.redirectTo({
-				url:'/pages/payTrading/payTrading'
-			})
+			}				
+			this.proId = e;
+			this.getcardAuthentication()
 		},
 		/* 切换储蓄卡 */
-		chooseCashCard(e){			
-			this.debitList.unshift(this.debitList.splice(e,1)[0])
-			this.togglePopup('')			
+		chooseCashCard(e){		
+			/* console.log(this.debitList.slice(e,e+1))
+			console.log(this.debitList) */
+			this.debitListDefault = this.debitList.slice(e,e+1)
+			this.togglePopup('')
+			// console.log(this.debitListDefault)
+				
 		},
 		/* 切换信用卡 */
 		chooseCreditCard(e){
-			this.creditList.unshift(this.creditList.splice(e,1)[0])
+			this.creditListDefault = this.creditList.slice(e,e+1)
 			this.togglePopup('')
 		}
 		
@@ -358,7 +389,7 @@ page, .pay
 			margin-top: 5upx;
 	/* 选择支付类型 */
 	.pay_type_choose
-		border: 1px solid #000;
+		// border: 1px solid #000;
 		height: 69%;
 		background:rgba(242,242,247,1);
 		padding: 35upx 20upx 0 25upx;
@@ -421,8 +452,7 @@ page, .pay
 				display: flex;
 				margin-bottom: 10upx;
 				padding: 30upx 20upx;;
-				background: url('../../static/lvdi.png') no-repeat;
-				background-size: 705upx,180upx;	
+				// background-size: 705upx,180upx;
 				image
 					width:66upx;
 					height:66upx;

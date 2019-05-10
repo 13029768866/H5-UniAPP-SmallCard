@@ -51,6 +51,17 @@ export const supporBank = (data,header) => {
 		console.log(1)
 	});
 }
+/* 点击通道接口 */
+export const cardAuthentication = (data,header) => {
+	return http.request({
+		url: '/payment-controller/payment',
+		method: 'GET',
+		data,
+		header
+	}).catch((err)=>{
+		console.log(1)
+	});
+}
 /* 信用卡套现首页接口end */
 /* 会员升级 */
 export const payUpGrade = (data,header) => {
@@ -67,5 +78,6 @@ export default {
     bindCards,
 	payUpGrade,
 	channelList,
-	supporBank
+	supporBank,
+	cardAuthentication
 }
