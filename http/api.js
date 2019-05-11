@@ -25,9 +25,7 @@ export const bindCards = (data,header) => {
 		method: 'GET',
 		data,
 		header
-	}).catch((err)=>{
-		console.log(1)
-	});
+	})
 }
 /* 在线交易通道 */
 export const channelList = (data,header) => {
@@ -36,9 +34,7 @@ export const channelList = (data,header) => {
 		method: 'GET',
 		data,
 		header
-	}).catch((err)=>{
-		console.log(1)
-	});
+	})
 }
 /* 通道支持银行查询 */
 export const supporBank = (data,header) => {
@@ -47,9 +43,7 @@ export const supporBank = (data,header) => {
 		method: 'GET',
 		data,
 		header
-	}).catch((err)=>{
-		console.log(1)
-	});
+	})
 }
 /* 点击通道接口 */
 export const cardAuthentication = (data,header) => {
@@ -58,9 +52,16 @@ export const cardAuthentication = (data,header) => {
 		method: 'GET',
 		data,
 		header
-	}).catch((err)=>{
-		console.log(1)
-	});
+	})
+}
+/* 省市查询接口 */
+export const merchantCity = (data,header) => {
+	return http.request({
+		url: '/payment-controller/landingMerchantCity',
+		method: 'GET',
+		data,
+		header
+	})
 }
 /* 信用卡套现首页接口end */
 /* 会员升级 */
@@ -79,5 +80,6 @@ export default {
 	payUpGrade,
 	channelList,
 	supporBank,
-	cardAuthentication
+	cardAuthentication,
+	merchantCity
 }

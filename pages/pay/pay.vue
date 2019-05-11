@@ -70,7 +70,7 @@
 							<image :src="item.cardLogo"></image>
 							<view class="choose_card_des">
 								<text>{{item.bankName}}</text>
-								<text>信用卡</text>
+								<text>{{item.cardType == 1?'储蓄卡':'信用卡'}}</text>
 								<text>{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
 							</view>
 						</view>
@@ -97,7 +97,7 @@
 							<image :src="item.cardLogo"></image>
 							<view class="choose_card_des">
 								<text>{{item.bankName}}</text>
-								<text>信用卡</text>
+								<text>{{item.cardType == 1?'储蓄卡':'信用卡'}}</text>
 								<text>{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
 							</view>
 						</view>
@@ -244,7 +244,7 @@ export default{
 		async getBankCards(){
 			let res = await this.$api.bindCards({},this.userPhoneInfo)				
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				// console.log(res)				
+				console.log(res)				
 				this.debitList= res.data.dataMap.DebitList
 				this.creditList= res.data.dataMap.CreditList
 				this.debitListDefault = this.debitList.slice(0,1)

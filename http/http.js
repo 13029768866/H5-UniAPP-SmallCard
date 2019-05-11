@@ -81,7 +81,9 @@ export default {
 			// 	}
 			// }
 
-			uni.request(_config);
+			uni.request(_config);			
+		}).catch(err =>{
+			console.log(1)
 		});
 	},
 	get(url, data, options) {
