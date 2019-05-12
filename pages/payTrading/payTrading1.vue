@@ -12,15 +12,30 @@
 			<view>实际到账&nbsp;&nbsp;{{arrivalAccount.toString().match(/^\d+(?:\.\d{0,2})?/)[0]}}元</view>
 		</view>
 		<!-- 验证码 -->		
-		<view class="code_input_main">			
-			<!-- <input placeholder="请输入落地商户" class="code_input_input" v-model="code" /> -->
-			<button type="default" @click="showMulLinkageTwoPicker">二级联动</button>
-		</view>				
+		<view class="code_input_main">
+			<view class="code_input_item">
+				{{code}}
+			</view>
+			<input 
+				@click="showMulLinkageTwoPicker" 
+				placeholder="请输入落地商户" 
+				class="code_input_input" 
+				v-model="code"
+				placeholder-style="color:#589DFD;"
+			/>			
+		</view>	
+		
 		<!-- 到账储蓄卡 -->
 		<view class="depsite_card">
 			到账储蓄银行：&nbsp;&nbsp;{{rePayCardNoName}}({{rePayCardNo.substr(rePayCardNo.length - 4)}})
 		</view>
-		<button class="sure_btn"  type="primary">确认提交</button>
+		<button 
+			class="sure_btn"  
+			type="primary"
+			@click="getPayCommit"
+		>确认提交</button>
+		
+		<!-- 省市联动组件 -->
 		<mpvue-picker 
 		:themeColor="themeColor" 
 		ref="mpvuePicker" 
@@ -30,17 +45,37 @@
 		 @onConfirm="onConfirm" 
 		 @onCancel="onCancel" 
 		 :pickerValueArray="pickerValueArray"></mpvue-picker>
+		 <!-- 落地商户组件 -->
+		 <uni-popup :show="type === 'bottom'" position="bottom" mode="fixed"  @hidePopup="togglePopup('')">				
+		 	<view class="choose_card_wrapper">
+		 		<view class="choose_card_title">选择商户</view>
+		 		<scroll-view scroll-y="true" class="choose_card_content">
+		 			<view 
+						class="choose_item"
+						v-for="item in merList"
+						:key ='item.id'
+						@click="chooseMer(item.merchant_name,item.id)"
+					>
+		 				{{item.merchant_name}}
+		 			</view>
+		 												
+		 		</scroll-view>											
+		 	</view>
+		 </uni-popup>
 	</view>
 </template>
 
 <script>
 	import mpvuePicker from '../../components/mpvue-picker/mpvuePicker.vue'
+	import uniPopup from '@/components/uni-popup/uni-popup.vue'
 	export default{
 		components:{
-			mpvuePicker
+			mpvuePicker,
+			uniPopup
 		},
 		data(){
 			return{
+				type: '',	/* 弹窗类型 */
 				/* 联级组件参数 */
 				mulLinkageTwoPicker: [],
 				cityPickerValueDefault: [0, 0, 1],
@@ -65,9 +100,14 @@
 				paycardNo: '',// 支付卡号
 				paycardNoName:'',	//付款银行名称
 				rePayCardNo: '', //	到账卡号
-				rePayCardNoName: '', //	到账银行名称			
+				rePayCardNoName: '', //	到账银行名称	
+				paymentId:'',		//	订单号
 				serviceCharge:  0	,//手续费
-				arrivalAccount: 0	//	到账金额
+				arrivalAccount: 0	,//	到账金额
+				province: '',	// 省份
+				city: '',		// 城市
+				merList:[],		// 落地商户列表	
+				merchantUid:''	// 落地商户编号
 			}
 		},
 		methods:{
@@ -81,7 +121,7 @@
 					client_ip:'123'
 				},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					// console.log(res)					
+					console.log(res)					
 					this.amount = res.data.dataMap.amount
 					this.paycardNo = res.data.dataMap.paycardNo
 					this.paycardNoName = res.data.dataMap.paycardNoName
@@ -89,17 +129,53 @@
 					this.rePayCardNoName = res.data.dataMap.rePayCardNoName
 					this.serviceCharge = res.data.dataMap.serviceCharge
 					this.arrivalAccount = res.data.dataMap.arrivalAccount
+					this.paymentId = res.data.dataMap.paymentId
 				}			
 			},
+			/* 省市查询 */
 			async getMerchantCity(){
 				let res = await this.$api.merchantCity({
 					proId: 'kb_tx'
 				},this.userPhoneInfo)
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)
-					this.mulLinkageTwoPicker = res.data.dataMap.provinceList
-					console.log(this.mulLinkageTwoPicker)
+					this.mulLinkageTwoPicker = res.data.dataMap.provinceList					
 				}
+			},
+			/* 落地商户查询 */
+			async getLandingMerchant(){
+				let res = await this.$api.landingMerchant({
+					proId: 'kb_tx',
+					province: this.province,
+					city: this.city
+				},this.userPhoneInfo)
+				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+					console.log(res)	
+					this.merList = res.data.dataMap.merList
+					this.togglePopup('bottom')
+				}
+			},
+			/* 套现-确认提交 */
+			async getPayCommit(){
+				if(this.merchantUid == ''){
+					uni.showToast( {title:"请选择落地商户!",icon:"none"})
+					return
+				}
+				
+				let res = await this.$api.payCommit({
+					proId: 'kb_tx',
+					paymentId: this.paymentId,
+					merchantUid: this.merchantUid
+				},this.userPhoneInfo)
+				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+					console.log(res)	
+					this.merList = res.data.dataMap.merList
+					this.togglePopup('bottom')
+				}
+			},
+			/* 弹窗显示 */
+			togglePopup(type) {
+				this.type = type;
 			},
 			onCancel(e) {
 				console.log(e)
@@ -109,12 +185,18 @@
 				this.mode = 'multiLinkageSelector'
 				this.deepLength = 2
 				this.pickerValueDefault = [0, 0]
-				this.$refs.mpvuePicker.show()
-				console.log(this.pickerValueArray)
+				this.$refs.mpvuePicker.show()				
 			},
-			onConfirm(e) {
-				this.pickerText = JSON.stringify(e)
-				console.log(this.pickerText)
+			onConfirm(e) {				
+				this.pickerText = e.province				
+				this.province = this.pickerText.split('-')[0]
+				this.city = this.pickerText.split('-')[1]
+				this.getLandingMerchant()
+			},
+			chooseMer(name,id){
+				this.code = name
+				this.merchantUid = id				
+				this.togglePopup('')
 			}
 		},
 		onLoad() {			
@@ -171,7 +253,7 @@ page, .pay_trading
 	.depsite_card
 		text-align: center;
 		font-size: 26upx;
-		margin-top: 165upx;
+		margin-top: 105upx;
 	/* 验证码输入 */
 	.code_input_main
 		position: relative;
@@ -180,24 +262,37 @@ page, .pay_trading
 		margin-top: 50upx;
 		justify-content: space-around;
 		.code_input_item
-			width: 93upx;
+			width: 752upx;
 			height: 93upx;
 			line-height: 93upx;
 			opacity: 0.8;
-			border-bottom: solid #D6D6DB 4upx;
-			margin: 0 10upx;
-			text-align: center;
-			padding-bottom: 0;
-			font-size: 30px;
+			border-bottom: solid #D6D6DB 4upx;								
+			font-size: 26upx;
 			color: #000;			
 		.code_input_input
 			position: absolute;
 			width: 100%;
 			height: 93upx;			
 			padding: 0 70upx;
-			// color transparent;
-			left: 0;
-			border: 1px solid #000;
+			color transparent;
+			left: 0;			
+	/* 落地商户 */
+	.choose_card_title
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 70upx;
+		font-size: 30upx;
+		color: #589DFD;
+		border-bottom: 2upx solid #D9D9D9;
+	.choose_card_content	
+		height: 850upx;		
+		.choose_item	
+			text-align: left;
+			line-height: 70upx;
+			padding: 0 25upx;
+			font-size:26upx;
+			border-bottom:2upx solid rgba(214,214,219,1);
 	/* 确定按钮 */
 	.sure_btn
 		width: 672upx;

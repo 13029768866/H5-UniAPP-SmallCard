@@ -63,6 +63,24 @@ export const merchantCity = (data,header) => {
 		header
 	})
 }
+/* 落地商户接口 */
+export const landingMerchant = (data,header) => {
+	return http.request({
+		url: '/payment-controller/landingMerchant',
+		method: 'GET',
+		data,
+		header
+	})
+}
+/* 套现-确认提交 */
+export const payCommit = (data,header) => {
+	return http.request({
+		url: '/payment-controller/payment-commit',
+		method: 'GET',
+		data,
+		header
+	})
+}
 /* 信用卡套现首页接口end */
 /* 会员升级 */
 export const payUpGrade = (data,header) => {
@@ -81,5 +99,7 @@ export default {
 	channelList,
 	supporBank,
 	cardAuthentication,
-	merchantCity
+	merchantCity,
+	landingMerchant,
+	payCommit
 }

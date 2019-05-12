@@ -39,7 +39,7 @@
 					'txnDattime':'20190429100913',
 					'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
 					},
-				proId:'',
+				proId:'',		/* 通道id */
 				bankList: []	/* 通道支持银行列表 */
 			}
 		},
