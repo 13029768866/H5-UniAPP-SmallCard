@@ -1,4 +1,5 @@
 <template>
+	
 	<scroll-view 
 	scroll-y
 	class="memberCenter">
@@ -31,20 +32,15 @@
 		data(){
 			return{
 				count: 5000,
-				userPhoneInfo:{				
-				'appType':'Android',
-				'phoneNo':'18771866669',
-				'orgId':'80017',
-				'ipAddress': '192.168.0.194',
-				'version': 'version',
-				'txnDattime':'20190429100913',
-				'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
-				},
+				userPhoneInfo:{},									
 				btnStatus: false		
 			}			
 		},
-		onLoad() {
-			this.countAdd()	
+		onLoad(options) {					
+			this.userPhoneInfo = JSON.parse(options.version)
+			document.title = "会员升级"
+			this.countAdd()
+			
 		},
 		methods:{
 			countAdd(){				
@@ -53,10 +49,15 @@
 				},500)
 			},		
 			async getPayUpGrade(){				
-				let res = await this.$api.payUpGrade({},this.userPhoneInfo)			
-				this.btnStatus = true								
-				let url = res.data.dataMap.url
-				window.location.href = url
+				let res = await this.$api.payUpGrade({},this.userPhoneInfo)	
+				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+					this.btnStatus = true								
+					let url = res.data.dataMap.url
+					window.location.href = url					
+				}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+				}
+				
 			}
 		}
 	}

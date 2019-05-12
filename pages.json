@@ -46,10 +46,10 @@
 			}
 		},
 		{	//	信用卡套现交易页	
-			"path":"pages/payTrading/payTrading1",
-			"style":{
+			"path":"pages/payTrading/payTrading1",			
+			"style":{				
 				"app-plus":{
-					"titleNView": false
+					 "titleNView": false					 
 				}
 			}
 		},

@@ -21,7 +21,7 @@
 				v-if="creditList.length == 0">
 				<view class="pay_bank_name">
 					<image class="bank_img"></image>
-					<text class="ell">招商银行</text>
+					<text class="ell">**银行</text>
 					<image class="choose_img_default" src="../../static/bandin.png"></image>
 				</view>
 				<view class="pay_bank_type">
@@ -170,15 +170,16 @@
 						</view>		
 						<view>
 							<view class="channel_type">
-								<text>{{channel.proName}}</text>
+								<text class="channel_name ell">{{channel.proName}}</text>
 								<text class="channel_time">({{channel.openTime}}）</text>
 								<image  
 									v-if="channel.isIntegral == 1"
 									class="integral" 
 									src="../../static/jifen.png"></image>
 							</view>
-							<view class="">
-								<text>{{channel.remark}}{{channel.rate}}</text>
+							<view class="channel_desc_wrapper">
+								<span class="channel_desc ell">{{channel.remark}} </span>
+								<text>费率{{channel.fee_rate}}+{{channel.rate}}/笔</text>
 							</view>
 						</view>								
 					</view>	
@@ -206,30 +207,25 @@ export default{
 			type: '',	/* 弹窗类型 */
 			money: '',	/* 金额 */
 			proId: '',	/* 通道 id */
+			/* 点击通道传递参数 */
+			params:{},
 			/* header携带参数，url获取 */
-			userPhoneInfo:{				
-				'appType':'Android',
-				'phoneNo':'18771866669',
-				'orgId':'80017',
-				'ipAddress': '192.168.0.194',
-				'version': 'version',
-				'txnDattime':'20190429100913',
-				'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
+			userPhoneInfo:{								
 				},
 				debitList: [],	/*储蓄卡列表*/
 				debitListDefault:[],
 				creditList:[],/*贷记卡列表 */					
 				creditListDefault:[],
-				channelList:[]	/* 通道列表 */
-				
+				channelList:[]	/* 通道列表 */				
 			}			
 	},
-	onLoad(){	
+	onLoad(options){
+		document.title = "银联快捷"
 		this.init()
-	},
-	computed: {
-		
-	},
+		// console.log(options.version)
+		// console.log(JSON.parse(options.version))
+		this.userPhoneInfo = JSON.parse(options.version)
+	},	
 	methods: {
 		/* 页面初始化操作 */
 		init(){						
@@ -250,28 +246,39 @@ export default{
 				this.debitListDefault = this.debitList.slice(0,1)
 				this.creditListDefault = this.creditList.slice(0,1)
 				// console.log(this.creditList,this.debitList)
-			}			
+			}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+				}					
 		},
 		/* 获取通道信息 */
 		async getChannelList(){
 			let res = await this.$api.channelList({proType:'payment'},this.userPhoneInfo)			
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				// console.log(res)				
+				console.log(res)				
 				this.channelList = res.data.dataMap.channelList
-			}			
+			}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+				}				
 		},
 		/* 点击通道 */
 		async getcardAuthentication(){
-			let res = await this.$api.cardAuthentication({
+			this.params = {
 				proId: this.proId,
 				amount: this.money,
 				paycardNo: this.creditListDefault[0].actNo,
 				rePayCardNo:this.debitListDefault[0].actNo,
 				client_ip:'123'
-			},this.userPhoneInfo)			
+			}
+			let res = await this.$api.cardAuthentication(this.params,this.userPhoneInfo)										
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				// console.log(res)								
-			}			
+				let params = JSON.stringify(this.params)
+				uni.redirectTo({
+					url:'/pages/payTrading/payTrading1?params='+ params +'&version='+ version
+				})								
+			}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none"})
+			}	
+			
 		},
 		/* 通道支持银行 */
 		supporBank(proId){			
@@ -293,9 +300,7 @@ export default{
 			this.getcardAuthentication()
 		},
 		/* 切换储蓄卡 */
-		chooseCashCard(e){		
-			/* console.log(this.debitList.slice(e,e+1))
-			console.log(this.debitList) */
+		chooseCashCard(e){					
 			this.debitListDefault = this.debitList.slice(e,e+1)
 			this.togglePopup('')
 			// console.log(this.debitListDefault)
@@ -303,7 +308,9 @@ export default{
 		},
 		/* 切换信用卡 */
 		chooseCreditCard(e){
+			// console.log(e)
 			this.creditListDefault = this.creditList.slice(e,e+1)
+			// console.log(this.creditListDefault)
 			this.togglePopup('')
 		}
 		
@@ -418,12 +425,21 @@ page, .pay
 			.integral
 				width: 98upx;
 				height: 38upx;
+			.channel_desc_wrapper
+				display: flex;
+				align-items: center;
+				.channel_desc				
+					width: 250upx;
+					
 			.channel_type
 				display: flex;
 				align-items: center;
 				margin-bottom: 20upx;
 				text:nth-child(1)
 					font-size: 30upx;
+				.channel_name
+					width: 195upx;
+					
 				.channel_time
 					margin-left: 30upx;
 					margin-right: 28upx;

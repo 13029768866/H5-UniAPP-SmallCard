@@ -50,7 +50,7 @@
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					// console.log(res)
 					this.bankList = res.data.dataMap.bankList				
-				}			
+				}
 			}
 		}
 	}

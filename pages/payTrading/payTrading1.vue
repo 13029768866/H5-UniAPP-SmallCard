@@ -86,15 +86,10 @@
 				pickerValueDefault: [0],
 				pickerValueArray:[],
 				code:'',
+				params: [],
+				proId: '',
 				/* header携带参数，url获取 */
-				userPhoneInfo:{				
-					'appType':'Android',
-					'phoneNo':'18771866669',
-					'orgId':'80017',
-					'ipAddress': '192.168.0.194',
-					'version': 'version',
-					'txnDattime':'20190429100913',
-					'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
+				userPhoneInfo:{								
 				},
 				amount: '',	//	支付金额
 				paycardNo: '',// 支付卡号
@@ -113,15 +108,9 @@
 		methods:{
 			/* 点击通道 */
 			async getcardAuthentication(){
-				let res = await this.$api.cardAuthentication({
-					proId: 'kb_tx',
-					amount: 5000,
-					paycardNo: '6258081722054207',
-					rePayCardNo: '6212251807001345023',
-					client_ip:'123'
-				},this.userPhoneInfo)			
+				let res = await this.$api.cardAuthentication(this.params,this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					console.log(res)					
+					// console.log(res)					
 					this.amount = res.data.dataMap.amount
 					this.paycardNo = res.data.dataMap.paycardNo
 					this.paycardNoName = res.data.dataMap.paycardNoName
@@ -130,22 +119,26 @@
 					this.serviceCharge = res.data.dataMap.serviceCharge
 					this.arrivalAccount = res.data.dataMap.arrivalAccount
 					this.paymentId = res.data.dataMap.paymentId
+				}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}			
 			},
 			/* 省市查询 */
 			async getMerchantCity(){
 				let res = await this.$api.merchantCity({
-					proId: 'kb_tx'
+					proId: this.proId
 				},this.userPhoneInfo)
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)
 					this.mulLinkageTwoPicker = res.data.dataMap.provinceList					
+				}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}
 			},
 			/* 落地商户查询 */
 			async getLandingMerchant(){
 				let res = await this.$api.landingMerchant({
-					proId: 'kb_tx',
+					proId: this.proId,
 					province: this.province,
 					city: this.city
 				},this.userPhoneInfo)
@@ -160,17 +153,17 @@
 				if(this.merchantUid == ''){
 					uni.showToast( {title:"请选择落地商户!",icon:"none"})
 					return
-				}
-				
+				}				
 				let res = await this.$api.payCommit({
-					proId: 'kb_tx',
+					proId: this.proId,
 					paymentId: this.paymentId,
 					merchantUid: this.merchantUid
 				},this.userPhoneInfo)
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					console.log(res)	
-					this.merList = res.data.dataMap.merList
-					this.togglePopup('bottom')
+					console.log(res)
+					window.location.href = res.data.dataMap.url
+				}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}
 			},
 			/* 弹窗显示 */
@@ -199,7 +192,13 @@
 				this.togglePopup('')
 			}
 		},
-		onLoad() {			
+		onLoad(options) {	
+			/* console.log(options.params)	
+			console.log(options.version) */
+			this.params = JSON.parse(options.params)
+			this.proId = this.params.proId
+			this.userPhoneInfo = JSON.parse(options.version)
+			// console.log(this.params)
 			this.getcardAuthentication()
 			this.getMerchantCity()
 		},
@@ -219,6 +218,12 @@
 
 
 <style lang="stylus">
+// 隐藏滚动条
+scroll-view ::-webkit-scrollbar{
+	   width: 0;
+	   height: 0;
+	   color: transparent;
+}
 page, .pay_trading
 	position: relative;
 	width: 100%;
