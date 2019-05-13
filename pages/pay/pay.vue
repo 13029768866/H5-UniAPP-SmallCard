@@ -314,7 +314,6 @@ export default{
 		},
 		/* 切换信用卡 */
 		chooseCreditCard(e){
-			// console.log(e)
 			this.creditListDefault = this.creditList.slice(e,e+1)
 			// console.log(this.creditListDefault)
 			this.togglePopup('')
