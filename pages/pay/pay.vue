@@ -18,7 +18,9 @@
 			<!-- 未绑定信用卡默认 -->
 			<view 
 				class="pay_bank" 
-				v-if="creditList.length == 0">
+				v-if="creditList.length == 0"
+				@click="android()"		
+			>
 				<view class="pay_bank_name">
 					<image class="bank_img"></image>
 					<text class="ell">**银行</text>
@@ -36,7 +38,7 @@
 				v-else
 				class="pay_bank"  
 				@click="togglePopup('bottom')"
-				v-for = "item in creditList.slice(0,1)"
+				v-for = "item in creditListDefault"
 				:key ="item.id"
 			>
 				<view class="pay_bank_name">
@@ -109,7 +111,8 @@
 			<!-- 未绑定储蓄卡 -->
 			<view 
 				class="pay_bank" 
-				v-if="debitList.length == 0"			
+				v-if="debitList.length == 0"
+				@click="android()"	
 			>
 				<view class="pay_bank_name">
 					<image class="bank_img"></image>
@@ -207,24 +210,25 @@ export default{
 			type: '',	/* 弹窗类型 */
 			money: '',	/* 金额 */
 			proId: '',	/* 通道 id */
+			clientIp:'',
 			/* 点击通道传递参数 */
 			params:{},
 			/* header携带参数，url获取 */
-			userPhoneInfo:{								
-				},
-				debitList: [],	/*储蓄卡列表*/
-				debitListDefault:[],
-				creditList:[],/*贷记卡列表 */					
-				creditListDefault:[],
-				channelList:[]	/* 通道列表 */				
+			userPhoneInfo:{},			
+			debitList: [],	/*储蓄卡列表*/
+			debitListDefault:[],
+			creditList:[],/*贷记卡列表 */					
+			creditListDefault:[],
+			channelList:[]	/* 通道列表 */				
 			}			
 	},
 	onLoad(options){
 		document.title = "银联快捷"
-		this.init()
-		// console.log(options.version)
 		// console.log(JSON.parse(options.version))
-		this.userPhoneInfo = JSON.parse(options.version)
+		this.userPhoneInfo = JSON.parse(options.version)		
+		uni.setStorageSync('userPhoneInfo',this.userPhoneInfo);			
+		this.clientIp = this.userPhoneInfo.ipAddress				
+		this.init()				
 	},	
 	methods: {
 		/* 页面初始化操作 */
@@ -240,7 +244,7 @@ export default{
 		async getBankCards(){
 			let res = await this.$api.bindCards({},this.userPhoneInfo)				
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				console.log(res)				
+				// console.log(res)				
 				this.debitList= res.data.dataMap.DebitList
 				this.creditList= res.data.dataMap.CreditList
 				this.debitListDefault = this.debitList.slice(0,1)
@@ -254,7 +258,7 @@ export default{
 		async getChannelList(){
 			let res = await this.$api.channelList({proType:'payment'},this.userPhoneInfo)			
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				console.log(res)				
+				// console.log(res)				
 				this.channelList = res.data.dataMap.channelList
 			}else{					
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
@@ -267,13 +271,17 @@ export default{
 				amount: this.money,
 				paycardNo: this.creditListDefault[0].actNo,
 				rePayCardNo:this.debitListDefault[0].actNo,
-				client_ip:'123'
+				client_ip:this.clientIp
 			}
 			let res = await this.$api.cardAuthentication(this.params,this.userPhoneInfo)										
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				let params = JSON.stringify(this.params)
+				// console.log(res)
+				let dataMap = res.data.dataMap
+					dataMap.proId = this.proId
+					dataMap = JSON.stringify(dataMap)	
+				console.log(dataMap)
 				uni.redirectTo({
-					url:'/pages/payTrading/payTrading1?params='+ params +'&version='+ version
+					url:'/pages/payTrading/payTrading1?dataMap='+ dataMap
 				})								
 			}else{					
 					uni.showToast({title:res.data.respMsg,icon:"none"})
@@ -312,7 +320,11 @@ export default{
 			this.creditListDefault = this.creditList.slice(e,e+1)
 			// console.log(this.creditListDefault)
 			this.togglePopup('')
-		}
+		},
+		/* 给安卓标识 */
+		 android() {
+			 console.log('toBankListActivity')		
+          }
 		
 	}
 }
@@ -438,7 +450,7 @@ page, .pay
 				text:nth-child(1)
 					font-size: 30upx;
 				.channel_name
-					width: 195upx;
+					width: 185upx;
 					
 				.channel_time
 					margin-left: 30upx;

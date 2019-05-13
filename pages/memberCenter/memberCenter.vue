@@ -36,9 +36,19 @@
 				btnStatus: false		
 			}			
 		},
-		onLoad(options) {					
-			this.userPhoneInfo = JSON.parse(options.version)
+		onLoad(options) {	
 			document.title = "会员升级"
+			console.log(options.version)
+			this.userPhoneInfo = JSON.parse(options.version)
+			console.log(this.userPhoneInfo)
+			uni.setStorage({
+				key: 'userPhoneInfo',
+				data: this.userPhoneInfo,
+				success: function () {
+					console.log('success');
+				}
+			});
+			
 			this.countAdd()
 			
 		},

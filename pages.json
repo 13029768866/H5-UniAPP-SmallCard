@@ -68,6 +68,14 @@
 					"titleNView": false
 				}
 			}
+		},
+		{	//	支付成功
+			"path":"pages/paySucc/paySucc",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
 		}
 	],
 	"globalStyle": {

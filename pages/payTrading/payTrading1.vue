@@ -86,7 +86,7 @@
 				pickerValueDefault: [0],
 				pickerValueArray:[],
 				code:'',
-				params: [],
+				dataMap: {},
 				proId: '',
 				/* header携带参数，url获取 */
 				userPhoneInfo:{								
@@ -107,22 +107,15 @@
 		},
 		methods:{
 			/* 点击通道 */
-			async getcardAuthentication(){
+		/* 	async getcardAuthentication(){
 				let res = await this.$api.cardAuthentication(this.params,this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					// console.log(res)					
-					this.amount = res.data.dataMap.amount
-					this.paycardNo = res.data.dataMap.paycardNo
-					this.paycardNoName = res.data.dataMap.paycardNoName
-					this.rePayCardNo = res.data.dataMap.rePayCardNo
-					this.rePayCardNoName = res.data.dataMap.rePayCardNoName
-					this.serviceCharge = res.data.dataMap.serviceCharge
-					this.arrivalAccount = res.data.dataMap.arrivalAccount
-					this.paymentId = res.data.dataMap.paymentId
+					
 				}else{					
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}			
-			},
+			}, */
 			/* 省市查询 */
 			async getMerchantCity(){
 				let res = await this.$api.merchantCity({
@@ -192,14 +185,21 @@
 				this.togglePopup('')
 			}
 		},
-		onLoad(options) {	
-			/* console.log(options.params)	
-			console.log(options.version) */
-			this.params = JSON.parse(options.params)
-			this.proId = this.params.proId
-			this.userPhoneInfo = JSON.parse(options.version)
-			// console.log(this.params)
-			this.getcardAuthentication()
+		onLoad(options) {								
+			this.userPhoneInfo = uni.getStorageSync('userPhoneInfo');				
+			this.dataMap = JSON.parse(options.dataMap)	
+			console.log(this.dataMap)
+			/* 参数赋值 */
+			this.amount = this.dataMap.amount
+			this.paycardNo = this.dataMap.paycardNo
+			this.paycardNoName = this.dataMap.paycardNoName
+			this.rePayCardNo = this.dataMap.rePayCardNo
+			this.rePayCardNoName = this.dataMap.rePayCardNoName
+			this.serviceCharge = this.dataMap.serviceCharge
+			this.arrivalAccount = this.dataMap.arrivalAccount
+			this.paymentId = this.dataMap.paymentId
+			this.proId = this.dataMap.proId
+						
 			this.getMerchantCity()
 		},
 		onBackPress() {
