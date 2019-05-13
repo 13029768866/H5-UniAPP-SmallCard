@@ -310,9 +310,7 @@ export default{
 		/* 切换储蓄卡 */
 		chooseCashCard(e){					
 			this.debitListDefault = this.debitList.slice(e,e+1)
-			this.togglePopup('')
-			// console.log(this.debitListDefault)
-				
+			this.togglePopup('')							
 		},
 		/* 切换信用卡 */
 		chooseCreditCard(e){
