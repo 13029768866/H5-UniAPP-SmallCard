@@ -25,20 +25,14 @@
 	/*  */
 	export default{
 		onLoad() {			
+			// this.userPhoneInfo = uni.getStorageSync('userPhoneInfo');
 			this.proId = utils.getUrlParam('proId')
 			this.getChannelList()
 		},
 		data(){
 			return {
 				userPhoneInfo:{				
-					'appType':'Android',
-					'phoneNo':'18771866669',
-					'orgId':'80017',
-					'ipAddress': '192.168.0.194',
-					'version': 'version',
-					'txnDattime':'20190429100913',
-					'Token': 'eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI5cXBnMGsiLCJzdWIiOiIxMDAwMDAyMSIsImV4cCI6MTU1NzEwODU1NCwiaWF0IjoxNTU2NTAzNzU0fQ.Kds-pbh-v1lqJLyXSrDglR4-PbbNnB0MlDNGeXN74YlY-Ex7bluocIOJrhlZhkYhb3wSwqNRFLnLlsmTMyPBrg'
-					},
+				},
 				proId:'',		/* 通道id */
 				bankList: []	/* 通道支持银行列表 */
 			}
@@ -46,7 +40,7 @@
 		methods:{		
 			/* 获取支持银行信息 */
 			async getChannelList(){				
-				let res = await this.$api.supporBank({proId:this.proId},this.userPhoneInfo)				
+				let res = await this.$api.supporBank({proId:this.proId})				
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					// console.log(res)
 					this.bankList = res.data.dataMap.bankList				

@@ -50,7 +50,7 @@
 					信用卡
 				</view>
 				<view class="pay_bank_num">
-					{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}
+					{{item.actNo.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}
 				</view>
 			</view>
 			<!-- 信用卡弹窗 -->
@@ -73,7 +73,7 @@
 							<view class="choose_card_des">
 								<text>{{item.bankName}}</text>
 								<text>{{item.cardType == 1?'储蓄卡':'信用卡'}}</text>
-								<text>{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
+								<text>{{item.actNo.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
 							</view>
 						</view>
 																
@@ -100,7 +100,7 @@
 							<view class="choose_card_des">
 								<text>{{item.bankName}}</text>
 								<text>{{item.cardType == 1?'储蓄卡':'信用卡'}}</text>
-								<text>{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
+								<text>{{item.actNo.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
 							</view>
 						</view>
 																
@@ -142,7 +142,7 @@
 					储蓄卡
 				</view>
 				<view class="pay_bank_num">
-					{{item.cardDattim.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}
+					{{item.actNo.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}
 				</view>
 			</view>
 		</view>
@@ -228,7 +228,9 @@ export default{
 		this.userPhoneInfo = JSON.parse(options.version)		
 		uni.setStorageSync('userPhoneInfo',this.userPhoneInfo);			
 		this.clientIp = this.userPhoneInfo.ipAddress				
-		this.init()				
+		this.init()	
+		
+	
 	},	
 	methods: {
 		/* 页面初始化操作 */
@@ -241,10 +243,10 @@ export default{
 			this.type = type;
 		},
 		/* 获取银行卡信息 */
-		async getBankCards(){
+		async getBankCards(){			
 			let res = await this.$api.bindCards({},this.userPhoneInfo)				
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				// console.log(res)				
+				console.log(res)				
 				this.debitList= res.data.dataMap.DebitList
 				this.creditList= res.data.dataMap.CreditList
 				this.debitListDefault = this.debitList.slice(0,1)
@@ -266,6 +268,9 @@ export default{
 		},
 		/* 点击通道 */
 		async getcardAuthentication(){
+			uni.showLoading({
+				title: '加载中'
+			});
 			this.params = {
 				proId: this.proId,
 				amount: this.money,
@@ -276,6 +281,7 @@ export default{
 			let res = await this.$api.cardAuthentication(this.params,this.userPhoneInfo)										
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 				// console.log(res)
+				uni.hideLoading()
 				let dataMap = res.data.dataMap
 					dataMap.proId = this.proId
 					dataMap = JSON.stringify(dataMap)	
@@ -283,7 +289,8 @@ export default{
 				uni.redirectTo({
 					url:'/pages/payTrading/payTrading1?dataMap='+ dataMap
 				})								
-			}else{					
+			}else{		
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none"})
 			}	
 			
@@ -342,7 +349,7 @@ page, .pay
 	/* 支付金额 */
 	.pay_money
 		position: relative;		
-		height:17vh;
+		height:225upx;
 		background:linear-gradient(-90deg,rgba(96,169,253,1),rgba(45,94,255,1));
 		.pay_money_much		
 			position: absolute;
@@ -360,6 +367,7 @@ page, .pay
 				border-bottom: 4upx solid #fff;
 	/* 信用卡，储蓄卡选择 */
 	.pay_bank_wrapper
+		position: static;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -367,7 +375,7 @@ page, .pay
 		padding: 0 10upx;
 		.pay_bank
 			width:360upx;
-			height:12.8vh;
+			height:170upx;
 			background:rgba(255,255,255,1);
 			border-radius:25upx;
 			.pay_bank_name
@@ -460,7 +468,8 @@ page, .pay
 					border-radius 50%;
 	
 	/* 信用卡弹窗区域 */
-	.choose_card_wrapper		
+	.choose_card_wrapper
+		background-color: #fff;
 		.choose_card_title
 			display: flex;
 			align-items: center;

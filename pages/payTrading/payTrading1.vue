@@ -118,24 +118,33 @@
 			}, */
 			/* 省市查询 */
 			async getMerchantCity(){
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.merchantCity({
 					proId: this.proId
 				},this.userPhoneInfo)
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)
+					uni.hideLoading()
 					this.mulLinkageTwoPicker = res.data.dataMap.provinceList					
-				}else{					
+				}else{	
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}
 			},
 			/* 落地商户查询 */
 			async getLandingMerchant(){
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.landingMerchant({
 					proId: this.proId,
 					province: this.province,
 					city: this.city
 				},this.userPhoneInfo)
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+					uni.hideLoading()
 					console.log(res)	
 					this.merList = res.data.dataMap.merList
 					this.togglePopup('bottom')
@@ -146,7 +155,10 @@
 				if(this.merchantUid == ''){
 					uni.showToast( {title:"请选择落地商户!",icon:"none"})
 					return
-				}				
+				}	
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.payCommit({
 					proId: this.proId,
 					paymentId: this.paymentId,
@@ -154,8 +166,10 @@
 				},this.userPhoneInfo)
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)
+					uni.hideLoading()
 					window.location.href = res.data.dataMap.url
-				}else{					
+				}else{	
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}
 			},
@@ -282,6 +296,8 @@ page, .pay_trading
 			color transparent;
 			left: 0;			
 	/* 落地商户 */
+	.choose_card_wrapper
+		background-color: #fff;
 	.choose_card_title
 		display: flex;
 		align-items: center;

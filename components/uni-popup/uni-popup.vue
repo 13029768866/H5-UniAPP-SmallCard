@@ -112,7 +112,7 @@
 	.uni-popup {
 		position: absolute;
 		z-index: 999;
-		background-color: #ffffff;
+		/* background-color: #ffffff; */
 	}
 
 	.uni-popup-middle {
