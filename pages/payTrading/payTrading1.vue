@@ -62,6 +62,26 @@
 		 		</scroll-view>											
 		 	</view>
 		 </uni-popup>
+		 <!-- 短信验证-->
+		 
+		  <uni-popup :show="type === 'smsValidation'" position="middle" mode="fixed"  @hidePopup="togglePopup('')">				
+		 	<view class="choose_sms_wrapper">
+				<view class="sms_title">
+					请填写短信验证码
+				</view>
+		 		<input 
+					type="number" 
+					class="validata_inp" 
+					v-model="validateCode" 
+					maxlength="6"
+					placeholder="请输入短信验证码 "
+				/>
+				<view 
+					class="validata_sure"
+					@click="getPaySms"
+				>确定</view>
+		 	</view>
+		 </uni-popup>
 	</view>
 </template>
 
@@ -91,6 +111,8 @@
 				/* header携带参数，url获取 */
 				userPhoneInfo:{								
 				},
+				validateCode: '',/* 短信验证码 */
+				ticketCode:'',	/* 短信接口编码 */
 				amount: '',	//	支付金额
 				paycardNo: '',// 支付卡号
 				paycardNoName:'',	//付款银行名称
@@ -106,16 +128,29 @@
 			}
 		},
 		methods:{
-			/* 点击通道 */
-		/* 	async getcardAuthentication(){
-				let res = await this.$api.cardAuthentication(this.params,this.userPhoneInfo)			
-				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					// console.log(res)					
-					
-				}else{					
-					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
-				}			
-			}, */
+			/* 提交短信验证码 */
+		async getPaySms(){
+			if(this.validateCode.trim() == ''){
+				uni.showToast({title:'短信验证码不能为空',icon:"none",duration:2000})
+				return;
+			}
+			uni.showLoading({
+				title: '加载中'
+			});
+			let res = await this.$api.paySms({
+				proId: this.proId,
+				validateCode: this.validateCode,
+				ticketCode: this.ticketCode,
+				paymentId: this.paymentId
+			},this.userPhoneInfo)
+			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+				uni.hideLoading()				
+				window.location.href = res.data.dataMap.url
+			}else{
+				uni.hideLoading()
+				uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+			}
+		},
 			/* 省市查询 */
 			async getMerchantCity(){
 				uni.showLoading({
@@ -167,7 +202,14 @@
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)
 					uni.hideLoading()
-					window.location.href = res.data.dataMap.url
+					if(res.data.dataMap.isSms == '1'){
+						this.togglePopup('smsValidation')
+						this.ticketCode = res.data.dataMap.ticketCode
+					}else if(res.data.dataMap.isSms == '0'){
+						window.location.href = res.data.dataMap.url
+					}else{
+						uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+					}	
 				}else{	
 					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
@@ -298,6 +340,31 @@ page, .pay_trading
 	/* 落地商户 */
 	.choose_card_wrapper
 		background-color: #fff;
+	.choose_sms_wrapper
+		width: 550upx;
+		height: 350upx;	
+		border-radius:10upx;
+		background-color: #fff;
+		overflow: hidden;
+		.sms_title
+			text-align: center;
+			font-size: 36upx;
+			margin: 40upx 0;
+		.validata_inp
+			margin-left: 40upx;
+			padding-left: 20upx;
+			width: 470upx;
+			height: 80upx;
+			border:1px solid rgba(204,204,204,1);
+			border-radius:4upx;
+		.validata_sure
+			margin-top: 55upx;
+			letter-spacing: 8upx;
+			text-align: center;
+			font-size: 40upx;
+			line-height:90upx;
+			color: #fff;
+			background:rgba(97,123,248,1);			
 	.choose_card_title
 		display: flex;
 		align-items: center;

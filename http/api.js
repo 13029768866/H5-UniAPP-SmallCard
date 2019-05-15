@@ -81,6 +81,15 @@ export const payCommit = (data,header) => {
 		header
 	})
 }
+/* 提交短信验证码 */
+export const paySms = (data,header) => {
+	return http.request({
+		url: '/payment-controller/paySms',
+		method: 'GET',
+		data,
+		header
+	})
+}
 /* 信用卡套现首页接口end */
 /* 会员升级 */
 export const payUpGrade = (data,header) => {
@@ -101,5 +110,6 @@ export default {
 	cardAuthentication,
 	merchantCity,
 	landingMerchant,
-	payCommit
+	payCommit,
+	paySms
 }

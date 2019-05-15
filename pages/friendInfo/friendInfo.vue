@@ -108,9 +108,11 @@
 					<image class="business_img"></image>
 					<image class="business_img"></image>				
 				</view>
-				<uni-popup :show="type === 'showImgs'" position="middle" mode="fixed" @hidePopup="togglePopup('')">
-					<image src="../../static/financial/card_bg.png" mode=""></image>
-				</uni-popup>
+		<!-- 		<uni-popup :show="type === 'showImgs'" position="middle" mode="fixed" @hidePopup="togglePopup('')">
+					<view class="show_img_wrapper">
+						<image class="show_img" src="../../static/hongbao.png" mode=""></image>
+					</view>
+				</uni-popup> -->
 			</view>						
 		</view>
 	</scroll-view>
@@ -156,6 +158,7 @@ scroll-view ::-webkit-scrollbar{
 	   height: 0;
 	   color: transparent;
 }
+
 page, .friend_info
 	position: relative;
 	width: 100%;
@@ -230,6 +233,7 @@ page, .friend_info
 			line-height: 48upx;
 		.business_images
 			padding: 30upx 61upx;
+			
 			.business_img
 				width: 180upx;
 				height: 180upx;
@@ -254,4 +258,11 @@ page, .friend_info
 			font-size: 36upx;
 			text-align: center;
 			margin-top: 40upx;
+	/* 图片展示 */	
+	.show_img_wrapper
+		width: 750upx;		
+		// .show_img
+		// 	width: 750upx;
+		// 	border: 1px solid #000;			
+			
 </style>
