@@ -80,6 +80,7 @@
 				}
 			}
 		},
+		/* 支付成功start */
 		{	//	支付成功
 			"path":"pages/paySucc/paySucc",
 			"style":{
@@ -90,6 +91,15 @@
 		},
 		{	//	会员升级成功
 			"path":"pages/paySucc/memSucc",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
+		/* 支付成功end */		
+		{	//	我的收益
+			"path":"pages/myEarnings/myEarnings",
 			"style":{
 				"app-plus":{
 					"titleNView": false
