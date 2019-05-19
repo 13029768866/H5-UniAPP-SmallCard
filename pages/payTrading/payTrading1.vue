@@ -17,6 +17,7 @@
 				{{code}}
 			</view>
 			<input 
+				disabled
 				@click="showMulLinkageTwoPicker" 
 				placeholder="请输入落地商户" 
 				class="code_input_input" 
@@ -144,8 +145,11 @@
 				paymentId: this.paymentId
 			},this.userPhoneInfo)
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+				// console.log(res)
 				uni.hideLoading()				
-				window.location.href = res.data.dataMap.url
+				uni.redirectTo({
+					url:'/pages/paySucc/paySucc'
+				})
 			}else{
 				uni.hideLoading()
 				uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
@@ -206,7 +210,10 @@
 						this.togglePopup('smsValidation')
 						this.ticketCode = res.data.dataMap.ticketCode
 					}else if(res.data.dataMap.isSms == '0'){
-						window.location.href = res.data.dataMap.url
+						// window.location.href = res.data.dataMap.url
+						uni.redirectTo({
+							url:'/pages/paySucc/paySucc'
+						})
 					}else{
 						uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 					}	
@@ -227,6 +234,7 @@
 				this.mode = 'multiLinkageSelector'
 				this.deepLength = 2
 				this.pickerValueDefault = [0, 0]
+				uni.hideKeyboard()
 				this.$refs.mpvuePicker.show()				
 			},
 			onConfirm(e) {				

@@ -8,9 +8,9 @@
 				<view class="card_title">
 					空卡办理
 				</view>
-				<view class="card_bank">
+			<!-- 	<view class="card_bank">
 					所属银行：<text>平安银行</text>
-				</view>
+				</view> -->
 				<view class="card_row">
 					<image src="../../static/financial/shouj.png" mode=""></image>
 					15678903578
@@ -80,7 +80,7 @@
 				的渠道模块上。
 				</view>
 			</view>
-			<view class="main_business">
+			<!-- <view class="main_business">
 				<view class="main_business_title">
 					<view class="business_title">
 						业务描述
@@ -92,7 +92,7 @@
 				需要渠道支持的资金操作都需要通过网关分发到对应
 				的渠道模块上。
 				</view>
-			</view>
+			</view> -->
 			<view class="main_business">
 				<view class="main_business_title">
 					<view class="business_title">

@@ -7,16 +7,6 @@ import http from './http.js'
 
 // 单独导出(测试接口) import {test} from '@/common/vmeitime-http/'
 
-
-//	热门超英
-export const erweima = (data,header) => {
-	return http.request({
-		url: '/cust-auth-api/getMyCode',
-		method: 'GET',
-		data,
-		header
-	});
-}
 /* 信用开套现首页接口start */
 /* 在线交易银行卡 */
 export const bindCards = (data,header) => {
@@ -100,9 +90,19 @@ export const payUpGrade = (data,header) => {
 		header
 	});
 }
+/* 我的收益start */
+// 我的收益上半部分
+export const myProfit = (data,header) => {
+	return http.request({
+		url: '/profit-controller/getMyProfit',
+		method: 'GET',
+		data,
+		header
+	});
+}
+/* 我的收益end */
 // 默认全部导出  import api from '@/http/api.js'
 export default {
-	erweima,
     bindCards,
 	payUpGrade,
 	channelList,
@@ -111,5 +111,6 @@ export default {
 	merchantCity,
 	landingMerchant,
 	payCommit,
-	paySms
+	paySms,
+	myProfit
 }

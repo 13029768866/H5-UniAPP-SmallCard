@@ -105,7 +105,33 @@
 					"titleNView": false
 				}
 			}
+		},
+		/* 推广相关页面start */
+		{	//	推广页面1
+			"path":"pages/promote/promote1",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
+		{	//	推广页面2
+			"path":"pages/promote/promote2",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
+		{	//	推广页面3
+			"path":"pages/promote/promote3",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
 		}
+		/* 推广相关页面end */
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
