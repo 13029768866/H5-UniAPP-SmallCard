@@ -100,6 +100,15 @@ export const myProfit = (data,header) => {
 		header
 	});
 }
+// 我的收益明细部分
+export const profitList = (data,header) => {
+	return http.request({
+		url: '/profit-controller/profitList',
+		method: 'GET',
+		data,
+		header
+	});
+}
 /* 我的收益end */
 // 默认全部导出  import api from '@/http/api.js'
 export default {
@@ -112,5 +121,6 @@ export default {
 	landingMerchant,
 	payCommit,
 	paySms,
-	myProfit
+	myProfit,
+	profitList
 }

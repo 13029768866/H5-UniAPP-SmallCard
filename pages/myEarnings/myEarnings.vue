@@ -5,7 +5,7 @@
 				收益金额
 			</view>
 			<view class="earnings_money">
-				896.26 元
+				{{amt}} 元
 				<image 
 				class="show_money"
 				src="../../static/myEarnings/beyes.png" ></image>
@@ -16,7 +16,7 @@
 						今日收益/元 
 					</view>
 					<view class="earnings_amount">
-						8888
+						{{Profit}}
 					</view>
 				</view>
 				<view class="divide_line"></view>
@@ -25,7 +25,7 @@
 						昨日收益/元 
 					</view>
 					<view class="earnings_amount">
-						8888
+						{{yesterdayProfit}}
 					</view>
 				</view>												
 			</view>
@@ -35,7 +35,7 @@
 				<view>
 					<view class="withdrawal_des">可提现额度金额/元</view>
 					<view class="withdrawal_money">
-						200.00
+						{{cashWithdrawal}}
 					</view>
 				</view>
 				<view class="atonce_withdrawal">
@@ -43,11 +43,42 @@
 				</view>
 			</view>
 		</view>
-		<view>
-			<view class="">
+		<scroll-view
+			scroll-y
+			class="detail_wrapper"
+		>
+			<view 
+				class="detail_bg_wrapper"				
+				v-for="(item,idx) in records"
+				:key = 'item.idx'
+				:class="{
+					detail_bg_wrapper1:idx%2==0,
+					detail_bg_wrapper2:idx%3==0,
+				}"
+			>
+				<view class="detail_row ">
+					订单号：{{item.order_no}}
+				</view>
+				<view 
+					class="detail_row detail_row1">
+					<view class="">
+						{{item.txnTime}}
+					</view>
+					<view>
+						收益金额：{{item.profitAmt}} 元
+					</view>
+				</view>
 				
-			</view>
-		</view>
+				<view class="detail_row">
+					<view class="">
+						{{item.orderType}}
+					</view>
+					<view class="">
+						来自：{{item.orderName}}
+					</view>
+				</view>
+			</view>							
+		</scroll-view>
 	</view>
 </template>
 
@@ -55,23 +86,48 @@
 	export default{
 		data(){
 			return {
-				userPhoneInfo: []
+				userPhoneInfo: [],
+				amt: '' ,	//收益金额
+				cashWithdrawal: '',	//可提现额度
+				Profit:''	,	//	今日收益
+				yesterdayProfit: ''	,//	昨日收益
+				current: 1,		// 当前页数
+				lastDays: 180,	// 查询天数	
+				records: []		// 详情信息
 			}
 		},
 		methods:{
 			/* 1、页面初始化 */
 			init(){
 				this.getMyProfit()
+				this.getProfitList()
 			},
 			/* 2、获取上半部分信息 */
 			async getMyProfit(){
 				let res = await this.$api.myProfit({},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					console.log(res)				
+					// console.log(res)				
 					// this.channelList = res.data.dataMap.channelList
+					this.amt = res.data.dataMap.amt
+					this.cashWithdrawal = res.data.dataMap.cashWithdrawal
+					this.Profit = res.data.dataMap.Profit
+					this.yesterdayProfit = res.data.dataMap.yesterdayProfit
 				}else{					
 						uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 					}				
+			},
+			/* 3、获取收益明细信息 */
+			async getProfitList(){
+				let res = await this.$api.profitList({
+					lastDays: this.lastDays,
+					current: this.current
+				},this.userPhoneInfo)			
+				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+					console.log(res)	
+					this.records = res.data.dataMap.records
+				}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+				}				
 			}
 		},
 		onLoad(options){
@@ -159,4 +215,33 @@ page, .myEarnings
 				background:rgba(240,240,246,1);
 				border-radius:24px;
 				margin-right: 90upx;
+	/* 明细背景 */
+	.detail_wrapper
+		height: 71%;
+		padding-bottom: 70upx;
+		border: 1px solid #000;	
+	.detail_bg_wrapper
+		width: 705upx;
+		height: 160upx;
+		background: url(../../static/myEarnings/detail_bg.png) no-repeat;
+		background-size: 705upx 160upx;
+		margin-left: 22upx;
+		margin-bottom: 10upx;
+		padding-top: 20upx;
+		padding-left: 25upx;
+		padding-right: 50upx;
+		.detail_row
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			font-size: 26upx;
+			color: #fff;
+		.detail_row1
+			margin: 8upx 0;
+	.detail_bg_wrapper1
+		background: url(../../static/myEarnings/detail_bg1.png) no-repeat;
+		background-size: 705upx 160upx;
+	.detail_bg_wrapper2
+		background: url(../../static/myEarnings/detail_bg2.png) no-repeat;
+		background-size: 705upx 160upx;
 </style>
