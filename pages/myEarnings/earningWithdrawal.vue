@@ -93,7 +93,7 @@
 		onLoad(options){
 			document.title = "提现"
 			this.userPhoneInfo = uni.getStorageSync('userPhoneInfo');
-			this.init()
+			this.init() 
 		}
 	}
 </script>
