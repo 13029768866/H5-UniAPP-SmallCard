@@ -4,11 +4,21 @@
 			<view class="card_title">
 				收益金额
 			</view>
-			<view class="earnings_money">
+			<view v-show="showMoney" class="earnings_money">
 				{{amt}} 元
 				<image 
 				class="show_money"
-				src="../../static/myEarnings/beyes.png" ></image>
+				src="../../static/myEarnings/beyes.png"
+				@click="handleShowMoney()" 
+				></image>
+			</view>
+			<view  v-show="!showMoney" class="earnings_money">
+				**** 
+				<image 
+				class="show_money"
+				src="../../static/myEarnings/oeyes.png" 
+				@click="handleShowMoney()"
+			></image>
 			</view>
 			<view class="earnings_wrapper">
 				<view class="today_earnings">
@@ -38,14 +48,18 @@
 						{{cashWithdrawal}}
 					</view>
 				</view>
-				<view class="atonce_withdrawal">
+				<view 
+					class="atonce_withdrawal"
+					@click="goEarningWithdrawal"
+				>
 					立即提现
 				</view>
 			</view>
 		</view>
 		<scroll-view
-			scroll-y
+			:scroll-y = 'enableScroll'
 			class="detail_wrapper"
+			@scrolltolower="loadMore"
 		>
 			<view 
 				class="detail_bg_wrapper"				
@@ -77,15 +91,26 @@
 						来自：{{item.orderName}}
 					</view>
 				</view>
-			</view>							
+			</view>		
+			
+			<!-- 上滑加载更多组件 -->
+			<wzj-load-more v-show="showStatus"  :status="loadMoreStatus"></wzj-load-more>
 		</scroll-view>
 	</view>
 </template>
 
 <script>
+	import wzjLoadMore from '@/components/wzj-load-more/wzj-load-more';
 	export default{
+		components:{
+			wzjLoadMore
+		},
 		data(){
-			return {
+			return {			
+				loadMoreStatus: 0,	/* 上拉加载更多状态 */
+				enableScroll: true,	/* 滚动状态 */
+				showStatus: false,
+				showMoney: false,	/* 金额展示状态 */
 				userPhoneInfo: [],
 				amt: '' ,	//收益金额
 				cashWithdrawal: '',	//可提现额度
@@ -93,7 +118,8 @@
 				yesterdayProfit: ''	,//	昨日收益
 				current: 1,		// 当前页数
 				lastDays: 180,	// 查询天数	
-				records: []		// 详情信息
+				records: []	,	// 详情信息
+				total: 0 		// 信息总条数
 			}
 		},
 		methods:{
@@ -111,7 +137,7 @@
 					this.amt = res.data.dataMap.amt
 					this.cashWithdrawal = res.data.dataMap.cashWithdrawal
 					this.Profit = res.data.dataMap.Profit
-					this.yesterdayProfit = res.data.dataMap.yesterdayProfit
+					this.yesterdayProfit = res.data.dataMap.yesterdayProfit										
 				}else{					
 						uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 					}				
@@ -123,11 +149,56 @@
 					current: this.current
 				},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					console.log(res)	
+					// console.log(res)	
 					this.records = res.data.dataMap.records
+					this.total = res.data.dataMap.total
+					/* 解决组件bug */
+					if(this.total > 10){
+						this.showStatus = true
+					}
 				}else{					
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
+			},
+			async getProfitList1(){
+				let res = await this.$api.profitList({
+					lastDays: this.lastDays,
+					current: this.current
+				},this.userPhoneInfo)			
+				if(res.data.respCode == "SUCCESS" && res.data.dataMap){	
+					this.loadMoreStatus = this.records.length > this.total-1 ? 2: 0;					
+					this.records = this.records.concat(res.data.dataMap.records)				
+				}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+				}				
+			},
+			/* 4、上拉加载 */			
+			loadMore(){
+				this.loadNewsList('add');			
+			},
+			/* 5、数据列表 */
+			loadNewsList(type){		
+				this.current++
+				//type add 加载更多 refresh下拉刷新
+				if(type === 'add'){
+					if(this.loadMoreStatus === 2){
+						return;
+					}
+					this.loadMoreStatus = 1;
+				}
+				/* 发送请求 */	
+				this.getProfitList1()
+				//上滑加载 处理状态				
+			},
+			/* 6、金额切换 */
+			handleShowMoney(){
+				this.showMoney = !this.showMoney
+			},
+			/* 7、立即提现 */
+			goEarningWithdrawal(){				
+				uni.redirectTo({
+					url:'/pages/myEarnings/earningWithdrawal'
+				})	
 			}
 		},
 		onLoad(options){
@@ -136,6 +207,10 @@
 			this.userPhoneInfo = JSON.parse(options.version)		
 			uni.setStorageSync('userPhoneInfo',this.userPhoneInfo);		
 			this.init()
+		},
+		onReachBottom(){
+			//上滑加载
+			this.loadData('add');
 		}
 	}
 </script>
@@ -151,7 +226,7 @@ page, .myEarnings
 	position: relative;
 	width: 100%;
 	height: 100%;
-	background: rgba(245,247,251,1);;
+	background: rgba(245,247,251,1);
 	overflow: hidden;
 	.divide_line_row
 		width: 705upx;
@@ -172,9 +247,12 @@ page, .myEarnings
 		.earnings_money
 			display: flex;
 			align-items: center;
+			// justify-content: space-between;
 			font-size: 46upx;	
 			margin-top: 10upx;
 			margin-bottom: 15upx;
+			// border: 1px solid #000;
+			// width: 370upx;
 			.show_money
 				width: 46upx;
 				height: 30upx;
@@ -219,7 +297,7 @@ page, .myEarnings
 	.detail_wrapper
 		height: 71%;
 		padding-bottom: 70upx;
-		border: 1px solid #000;	
+		// border: 1px solid #000;	
 	.detail_bg_wrapper
 		width: 705upx;
 		height: 160upx;

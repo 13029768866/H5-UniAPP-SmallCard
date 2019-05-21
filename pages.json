@@ -97,7 +97,8 @@
 				}
 			}
 		},
-		/* 支付成功end */		
+		/* 支付成功end */	
+		/* 收益相关start */
 		{	//	我的收益
 			"path":"pages/myEarnings/myEarnings",
 			"style":{
@@ -106,6 +107,15 @@
 				}
 			}
 		},
+		{	//	收益提现
+			"path":"pages/myEarnings/earningWithdrawal",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
+		/* 收益相关end */
 		/* 推广相关页面start */
 		{	//	推广页面1
 			"path":"pages/promote/promote1",
