@@ -1,21 +1,28 @@
 <template>
 	<view class="withdrawDetail">
 		<view class="select_status">
-			<select class="select_styl" id="">
-				<option>全部状态</option>
-				<option>成功</option>
-				<option>失败</option>
-				<option>处理中</option>
-				<option>未处理</option>
+			<select 
+				class="select_styl"
+				 v-model="withdrawStatus"
+				@change ="selectChange">
+				<option value="">全部状态</option>
+				<option value="1">成功</option>
+				<option value="2">失败</option>
+				<option value="3">处理中</option>
+				<option value="0">未处理</option>
 			</select>
 			<view class="line">
 				
 			</view>
-			<select class="select_styl" id="">
-				<option>近7天</option>
-				<option>近30天</option>
-				<option>近60天</option>
-				<option>近90天</option>
+			<select 
+				class="select_styl"
+				v-model="withdrawTime"
+				@change="selectChange"
+			>
+				<option value="7">近7天</option>
+				<option value="30">近30天</option>
+				<option value="60">近60天</option>
+				<option value="90">近90天</option>
 			</select>
 		</view>
 		<view 
@@ -47,15 +54,19 @@
 		data(){
 			return{
 				userPhoneInfo:  [],
-				records: []
+				records: [],
+				withdrawStatus: '',
+				withdrawTime: 30,
+				current: 1
 			}
 		},
 		methods:{
 			/* 1、获取数据 */
 			async getCashList(){	
 				let res = await this.$api.cashList({
-					lastDays: 90,
-					current: 1
+					lastDays: this.withdrawTime,
+					current: this.current,
+					orderType: this.withdrawStatus
 				},this.userPhoneInfo)				
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)	
@@ -63,6 +74,10 @@
 				}else{					
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}					
+			},
+			/* 2、获取选中项 */
+			selectChange(obj){
+				this.getCashList()
 			}
 		},
 		onLoad() {
