@@ -140,6 +140,14 @@
 					"titleNView": false
 				}
 			}
+		},
+		{	//	帮助中心
+			"path":"pages/helpCenter/helpCenter",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
 		}
 		/* 推广相关页面end */
 	],

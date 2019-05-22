@@ -203,7 +203,7 @@
 		},
 		onLoad(options){
 			document.title = "我的收益"
-			// console.log(JSON.parse(options.version))
+			console.log(JSON.parse(options.version))
 			this.userPhoneInfo = JSON.parse(options.version)		
 			uni.setStorageSync('userPhoneInfo',this.userPhoneInfo);		
 			this.init()

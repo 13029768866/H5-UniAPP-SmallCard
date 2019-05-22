@@ -109,7 +109,25 @@ export const profitList = (data,header) => {
 		header
 	});
 }
+// 提现页面
+export const withdrawal = (data,header) => {
+	return http.request({
+		url: '/profit-controller/cash-withdrawal',
+		method: 'GET',
+		data,
+		header
+	});
+}
 /* 我的收益end */
+// 帮助中心
+export const appHelpInfo = (data,header) => {
+	return http.request({
+		url: '/mng-controller/appHelpInfo',
+		method: 'GET',
+		data,
+		header
+	});
+}
 // 默认全部导出  import api from '@/http/api.js'
 export default {
     bindCards,
@@ -122,5 +140,7 @@ export default {
 	payCommit,
 	paySms,
 	myProfit,
-	profitList
+	profitList,
+	withdrawal,
+	appHelpInfo
 }

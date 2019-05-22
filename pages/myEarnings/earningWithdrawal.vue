@@ -10,6 +10,7 @@
 				backgroundSize:'730upx, 195upx',
 				backgroundRepeat:'no-repeat'
 			}"
+			@click="togglePopup('bottom1')"
 		>
 			<image 
 				class="bank_logo"
@@ -21,7 +22,7 @@
 					{{item.bankName}}
 				</view>
 				<view class="bank_num">
-					尾号{{item.cardDattim.slice(item.cardDattim.length - 4)}}储蓄卡
+					尾号{{item.actNo.slice(item.actNo.length - 4)}}储蓄卡
 					
 				</view>				
 			</view>
@@ -35,28 +36,73 @@
 		<view class="withdraw_title">
 			提现金额
 		</view>
-		<view class="">
+		<view class="withdraw_money_wrapper">
 			<input 
-				type="text"
+				type="number"
 				placeholder="请输入提现金额"
+				placeholder-style='	fontSize: 35upx;'							
 				class="code_input_input"
+				v-model="withdrawMoney"
 			>
-			<view class="">
+			<view class="money_str">
 				￥
 			</view>
-			<view class="">
+			<view 
+				class="widhdraw_all"
+				@click="withdrawAll"
+			>
 				全部提现
 			</view>
+		</view>
+		<!-- 储蓄卡弹窗 -->
+			<uni-popup :show="type === 'bottom1'" position="bottom" mode="fixed"  @hidePopup="togglePopup('')">				
+			<view class="choose_card_wrapper">
+				<view class="choose_card_title">选择储蓄卡</view>
+				<scroll-view scroll-y="true" class="choose_card_content">
+					<view 
+						class="choose_card_item"
+						v-for="(item,idx) in debitList"
+						:key ="item.idx"
+						@click="chooseCashCard(idx)"
+						:style = "{																
+							background:'url('+ item.bankBg+')',
+							backgroundSize:'705upx,180upx',
+							backgroundRepeat:'no-repeat'
+						}"
+					>
+						<image :src="item.cardLogo"></image>
+						<view class="choose_card_des">
+							<text>{{item.bankName}}</text>
+							<text>{{item.cardType == 1?'储蓄卡':'信用卡'}}</text>
+							<text>{{item.actNo.replace(/^(\d{4})\d+(\d{4})$/, "$1****$2")}}</text>
+						</view>
+					</view>
+															
+				</scroll-view>											
+			</view>
+		</uni-popup>
+		<view 
+			class="sure_withdraw"
+			@click="sureWithdraw"
+		>
+			确认提现
 		</view>
 	</view>
 </template>
 
 <script>
+	import uniPopup from '@/components/uni-popup/uni-popup.vue'
 	export default{
+		components:{
+			uniPopup
+		},
 		data(){
 			return {
 				userPhoneInfo: [],
-				amt: 0	,				// 可提现金额
+				type: ''	,
+				withdrawMoney: '',		//	用户提现金额
+				act_no: '',				//	银行卡号 
+				cash_amt: 0	,			// 可提现金额
 				debitList: [] ,			// 提现卡列表
 				debitListDefault: []	// 默认提现卡
 			}
@@ -84,11 +130,55 @@
 				let res = await this.$api.myProfit({},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)				
-					this.amt = res.data.dataMap.amt														
+					this.cash_amt = res.data.dataMap.cashWithdrawal	
+					console.log(this.cash_amt)
 				}else{					
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
-			}
+			},
+			/* 4、全部提现 */
+			withdrawAll(){
+				this.withdrawMoney = this.cash_amt
+			},
+			/* 5、确认提现 */
+			sureWithdraw(){							
+				if(!this.withdrawMoney){
+					uni.showToast({title:'提现金额不能为空!',icon:"none",duration:2500})
+					return
+				}
+				if(this.withdrawMoney <= 0){
+					uni.showToast({title:'提现金额不能小于0元!',icon:"none",duration:2500})
+					return
+				}
+				console.log(this.withdrawMoney,this.cash_amt)
+				if(this.withdrawMoney > this.cash_amt){
+					uni.showToast({title:'提现金额不能超过可提现金额!',icon:"none",duration:2500})					
+					return
+				}	
+				this.getWithdrawal()
+			},
+			/* 6、切换信用卡需要方法 */
+			/* 弹窗显示 */
+			togglePopup(type) {
+				this.type = type;
+			},
+			/* 切换储蓄卡 */
+			chooseCashCard(e){					
+				this.debitListDefault = this.debitList.slice(e,e+1)
+				this.togglePopup('')										
+			},
+			/* 7、确认提现 */
+			async getWithdrawal(){
+				let res = await this.$api.withdrawal({
+					cash_amt: this.withdrawMoney,
+					act_no: this.debitListDefault[0].actNo
+				},this.userPhoneInfo)			
+				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
+					uni.showToast({title:'提现成功',icon:"none",duration:4000})
+				}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+				}				
+			},
 		},
 		onLoad(options){
 			document.title = "提现"
@@ -133,13 +223,79 @@ page, .earningWithdrawal
 			height: 23upx;
 	/* 提现金额 */
 	.withdraw_title
-		font-size: 26upx;
-		margin-top: 15upx;
-		margin-left: 60upx;
-	.code_input_input	
-		width: 690upx;
-		height: 93upx;		
-		margin-left: 30upx;
-		border-bottom: 1px solid #ccc;
-		
+		font-size: 36upx;
+		margin-top: 20upx;
+		margin-left: 55upx;
+	.withdraw_money_wrapper
+		position: relative;
+		.code_input_input	
+			width: 690upx;
+			height: 93upx;		
+			margin-left: 30upx;
+			padding-left: 65upx;
+			font-size: 60upx;
+			color: #437FFE;
+			border-bottom: 1px solid #ccc;
+		.money_str
+			position: absolute;
+			line-height: 93upx;
+			top: 0;
+			left: 40upx;
+			font-size: 60upx;
+			color: #437FFE;
+		.widhdraw_all
+			position: absolute;
+			z-index: 99;
+			line-height: 93upx;
+			font-size: 30upx;
+			top: 0;
+			right: 65upx;
+			color:rgba(149,149,149,1);
+		.withdraw_placeholder
+			font-size: 30upx!important;
+	.sure_withdraw
+			width:672upx;
+			line-height:90upx;
+			text-align: center;
+			margin-left: 38upx;
+			color:#fff;
+			margin-top: 280upx;
+			background:linear-gradient(90deg,rgba(95,168,253,1),rgba(45,94,255,1));
+			border-radius:45upx;
+	/* 信用卡弹窗区域 */
+	.choose_card_wrapper
+		background-color: #fff;
+		.choose_card_title
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 70upx;
+			font-size: 30upx;
+			border-bottom: 1upx solid #D9D9D9;
+		.choose_card_content
+			padding: 30upx 20upx;
+			height: 850upx;
+			.choose_card_item
+				width: 705upx;
+				height: 180upx;
+				display: flex;
+				margin-bottom: 10upx;
+				padding: 30upx 20upx;;
+				// background-size: 705upx,180upx;
+				image
+					width:66upx;
+					height:66upx;
+					border-radius 50%;
+					margin-right: 20upx;
+				.choose_card_des
+					display: flex;
+					flex-direction column;
+					align-items: flex-start;
+					font-size: 30upx;
+					line-height: 30upx;
+					color #fff
+					text:nth-child(2)
+						font-size: 24upx;
+						margin-top: 15upx;
+						margin-bottom: 25upx;	
 </style>
