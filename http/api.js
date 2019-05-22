@@ -127,7 +127,7 @@ export const appHelpInfo = (data,header) => {
 		data,
 		header
 	});
-}
+} 
 // 默认全部导出  import api from '@/http/api.js'
 export default {
     bindCards,
