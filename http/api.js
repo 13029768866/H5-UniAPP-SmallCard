@@ -118,6 +118,15 @@ export const withdrawal = (data,header) => {
 		header
 	});
 }
+// 提现明细
+export const cashList = (data,header) => {
+	return http.request({
+		url: '/profit-controller/cash-list',
+		method: 'GET',
+		data,
+		header
+	});
+}
 /* 我的收益end */
 // 帮助中心
 export const appHelpInfo = (data,header) => {
@@ -142,5 +151,6 @@ export default {
 	myProfit,
 	profitList,
 	withdrawal,
-	appHelpInfo
+	appHelpInfo,
+	cashList
 }

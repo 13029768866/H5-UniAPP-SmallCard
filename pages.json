@@ -115,6 +115,14 @@
 				}
 			}
 		},
+		{	//	提现记录
+			"path":"pages/myEarnings/withdrawDetail",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
 		/* 收益相关end */
 		/* 推广相关页面start */
 		{	//	推广页面1

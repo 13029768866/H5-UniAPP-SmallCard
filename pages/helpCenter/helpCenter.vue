@@ -81,6 +81,7 @@ page, .helpCenter
 	position: relative;
 	width: 100%;
 	height: 100%;
+	padding-bottom: 40upx;
 	background: rgba(245,247,251,1);
 	overflow: hidden;
 	.help_center_top
