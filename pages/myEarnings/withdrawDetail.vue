@@ -25,39 +25,56 @@
 				<option value="90">近90天</option>
 			</select>
 		</view>
-		<view 
-			class="withdraw_item"
-			v-for="item in records"
-			:key = "item.idx"
-		>
-			<view class="withdraw_item_top">
-				<view>
-					{{item.title}}
+		<scroll-view 
+			class="withdraw_scroll_wrapper"
+			@scrolltolower="loadMore"
+			scroll-y>
+			<view 
+				class="withdraw_item"
+				v-for="item in records"
+				:key = "item.idx"
+			>
+				<view class="withdraw_item_top">
+					<view>
+						{{item.title}}
+					</view>
+					<view>
+						￥{{item.amount}}元
+					</view>
 				</view>
-				<view>
-					￥{{item.amount}}元
+				<view class="withdraw_item_top">
+					<view class="withdraw_time">
+						{{item.txnTime}}
+					</view>
+					<view v-html="item.orderStatus"></view>											
 				</view>
 			</view>
-			<view class="withdraw_item_top">
-				<view class="withdraw_time">
-					{{item.txnTime}}
-				</view>
-				<view v-html="item.orderStatus"></view>											
-			</view>
-		</view>
+		
+			<!-- 上滑加载更多组件 -->
+			<wzj-load-more v-show="showStatus"  :status="loadMoreStatus"></wzj-load-more>
+		</scroll-view>
 		
 	</view>
 </template>
 
 <script>
+	import wzjLoadMore from '@/components/wzj-load-more/wzj-load-more';
 	export default{
+		components:{
+			wzjLoadMore
+		},
 		data(){
 			return{
 				userPhoneInfo:  [],
 				records: [],
 				withdrawStatus: '',
 				withdrawTime: 30,
-				current: 1
+				current: 1,
+				/* 上拉加载组件参数 */
+				loadMoreStatus: 0,
+				enableScroll: true,	/* 滚动状态 */
+				showStatus: false,
+				total: 0
 			}
 		},
 		methods:{
@@ -71,13 +88,58 @@
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)	
 					this.records = res.data.dataMap.records
+					this.total = res.data.dataMap.total
+					/* 解决组件bug */
+					if(this.total > 10){
+						this.showStatus = true
+					}
 				}else{					
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}					
 			},
 			/* 2、获取选中项 */
 			selectChange(obj){
+				this.current = 1
+				this.showStatus = false
 				this.getCashList()
+			},
+			/* 3、上拉加载 */			
+			loadMore(){
+				console.log(this.current)
+				this.loadNewsList('add');			
+			},
+			/* 4、数据列表 */
+			loadNewsList(type){		
+				this.current++				
+				//type add 加载更多 refresh下拉刷新
+				if(type === 'add'){
+					if(this.loadMoreStatus === 2){
+						return;
+					}
+					this.loadMoreStatus = 1;
+				}
+				
+				/* 发送请求 */	
+				this.getCashList1()	
+				
+			},
+			async getCashList1(){
+				let res = await this.$api.cashList({
+					lastDays: this.withdrawTime,
+					current: this.current,
+					orderType: this.withdrawStatus
+				},this.userPhoneInfo)				
+				if(res.data.respCode == "SUCCESS" && res.data.dataMap){	
+					this.loadMoreStatus = this.records.length > this.total-1 ? 2: 0;					
+					this.records = this.records.concat(res.data.dataMap.records)
+					this.total = res.data.dataMap.total
+					/* 解决组件bug */
+					if(this.total > 10){
+						this.showStatus = true
+					}
+				}else{					
+					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
+				}				
 			}
 		},
 		onLoad() {
@@ -119,6 +181,9 @@ page, .withdrawDetail
 			padding-left: 118upx;
 			border:  none;
 			text-align: center;
+	.withdraw_scroll_wrapper
+		height: 95%;
+		// border: 1px solid #000;
 	.withdraw_item
 		width: 750upx;
 		height: 126upx;

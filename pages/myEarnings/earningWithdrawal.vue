@@ -155,7 +155,7 @@
 					uni.showToast({title:'提现金额不能超过可提现金额!',icon:"none",duration:2500})					
 					return
 				}	
-				this.getWithdrawal()
+				this.getWithdrawal()	
 			},
 			/* 6、切换信用卡需要方法 */
 			/* 弹窗显示 */
@@ -168,21 +168,24 @@
 				this.togglePopup('')										
 			},
 			/* 7、确认提现 */
-			async getWithdrawal(){
+			async getWithdrawal(){			
+				console.log(1)
 				let res = await this.$api.withdrawal({
 					cash_amt: this.withdrawMoney,
 					act_no: this.debitListDefault[0].actNo
 				},this.userPhoneInfo)			
-				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					uni.showToast({title:'提现成功',icon:"none",duration:4000})
-				}else{					
+				if(res.data.respCode == "SUCCESS"){
+					uni.redirectTo({
+						url:'/pages/myEarnings/withdrawDetail'
+					})					
+				}else{						
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
 			},
 		},
 		onLoad(options){
 			document.title = "提现"
-			this.userPhoneInfo = uni.getStorageSync('userPhoneInfo');
+			this.userPhoneInfo = uni.getStorageSync('userPhoneInfo');		
 			this.init() 
 		}
 	}
