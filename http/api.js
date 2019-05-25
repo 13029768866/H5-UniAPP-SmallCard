@@ -1,11 +1,27 @@
 import http from './http.js'
-/**
- * 将业务所有接口统一起来便于维护
- * 如果项目很大可以将 url 独立成文件，接口分成不同的模块
- */
+
  
 
-// 单独导出(测试接口) import {test} from '@/common/vmeitime-http/'
+/* 金融圈start */
+// 分类列表
+export const professionList = (data,header) => {
+	return http.request({
+		url: '/financial-controller/professionList',
+		method: 'GET',
+		data,
+		header
+	})
+}
+// 业务接口列表
+export const financialList = (data,header) => {
+	return http.request({
+		url: '/financial-controller/financialList',
+		method: 'GET',
+		data,
+		header
+	})
+}
+/* 金融圈end */
 
 /* 信用开套现首页接口start */
 /* 在线交易银行卡 */
@@ -127,6 +143,7 @@ export const cashList = (data,header) => {
 		header
 	});
 }
+
 /* 我的收益end */
 // 帮助中心
 export const appHelpInfo = (data,header) => {
@@ -152,5 +169,7 @@ export default {
 	profitList,
 	withdrawal,
 	appHelpInfo,
-	cashList
+	cashList,
+	professionList,
+	financialList
 }

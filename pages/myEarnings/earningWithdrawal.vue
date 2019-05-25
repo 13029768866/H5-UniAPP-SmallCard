@@ -114,7 +114,10 @@
 				this.getMyProfit()
 			},
 			/* 2、获取银行卡信息 */
-			async getBankCards(){			
+			async getBankCards(){	
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.bindCards({},this.userPhoneInfo)				
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)				
@@ -127,12 +130,17 @@
 			},
 			/* 3、获取用户可提现金额 */
 			async getMyProfit(){
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.myProfit({},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					console.log(res)				
+					console.log(res)		
+					uni.hideLoading()
 					this.cash_amt = res.data.dataMap.cashWithdrawal	
 					console.log(this.cash_amt)
-				}else{					
+				}else{	
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
 			},
@@ -150,11 +158,11 @@
 					uni.showToast({title:'提现金额不能小于0元!',icon:"none",duration:2500})
 					return
 				}
-				console.log(this.withdrawMoney,this.cash_amt)
-				if(this.withdrawMoney > this.cash_amt){
-					uni.showToast({title:'提现金额不能超过可提现金额!',icon:"none",duration:2500})					
-					return
-				}	
+				// console.log(this.withdrawMoney,this.cash_amt)
+				// if(this.withdrawMoney > this.cash_amt){
+				// 	uni.showToast({title:'提现金额不能超过可提现金额!',icon:"none",duration:2500})					
+				// 	return
+				// }	
 				this.getWithdrawal()	
 			},
 			/* 6、切换信用卡需要方法 */
@@ -169,16 +177,21 @@
 			},
 			/* 7、确认提现 */
 			async getWithdrawal(){			
-				console.log(1)
+				// console.log(1)
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.withdrawal({
 					cash_amt: this.withdrawMoney,
 					act_no: this.debitListDefault[0].actNo
 				},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS"){
+					uni.hideLoading()
 					uni.redirectTo({
 						url:'/pages/myEarnings/withdrawDetail'
 					})					
-				}else{						
+				}else{	
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
 			},

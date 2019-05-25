@@ -31,8 +31,9 @@
 			scroll-y>
 			<view 
 				class="withdraw_item"
-				v-for="item in records"
+				v-for="(item,idx) in records"
 				:key = "item.idx"
+				@click="checkMsgDetail(idx)"
 			>
 				<view class="withdraw_item_top">
 					<view>
@@ -74,12 +75,16 @@
 				loadMoreStatus: 0,
 				enableScroll: true,	/* 滚动状态 */
 				showStatus: false,
-				total: 0
+				total: 0,
+				pages: 0
 			}
 		},
 		methods:{
 			/* 1、获取数据 */
-			async getCashList(){	
+			async getCashList(){
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.cashList({
 					lastDays: this.withdrawTime,
 					current: this.current,
@@ -87,13 +92,16 @@
 				},this.userPhoneInfo)				
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					console.log(res)	
+					uni.hideLoading()
 					this.records = res.data.dataMap.records
 					this.total = res.data.dataMap.total
+					this.pages = res.data.dataMap.pages
 					/* 解决组件bug */
 					if(this.total > 10){
 						this.showStatus = true
 					}
-				}else{					
+				}else{	
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}					
 			},
@@ -101,11 +109,12 @@
 			selectChange(obj){
 				this.current = 1
 				this.showStatus = false
+				this.loadMoreStatus = 0
 				this.getCashList()
 			},
 			/* 3、上拉加载 */			
 			loadMore(){
-				console.log(this.current)
+				// console.log(this.current)
 				this.loadNewsList('add');			
 			},
 			/* 4、数据列表 */
@@ -124,22 +133,35 @@
 				
 			},
 			async getCashList1(){
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.cashList({
 					lastDays: this.withdrawTime,
 					current: this.current,
 					orderType: this.withdrawStatus
 				},this.userPhoneInfo)				
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){	
-					this.loadMoreStatus = this.records.length > this.total-1 ? 2: 0;					
-					this.records = this.records.concat(res.data.dataMap.records)
+					uni.hideLoading()
+					this.records = this.records.concat(res.data.dataMap.records)				
+					this.loadMoreStatus = this.current >= this.pages? 2: 0;
 					this.total = res.data.dataMap.total
 					/* 解决组件bug */
 					if(this.total > 10){
 						this.showStatus = true
 					}
-				}else{					
+				}else{	
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
+			},
+			/* 5、查看详情 */
+			checkMsgDetail(idx){
+				let currentIdx = this.records[idx]		
+				uni.setStorageSync('currentIdx',currentIdx);
+				uni.redirectTo({
+					url:'/pages/myEarnings/withdrawDetailCurrent'
+				})
 			}
 		},
 		onLoad() {

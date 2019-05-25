@@ -42,17 +42,25 @@
 			<!-- 分隔线 -->
 			<view class="divide_line_row"></view>
 			<view class="withdrawal_wrapper">
-				<view>
+				<view  class="withdraw_left">
 					<view class="withdrawal_des">可提现额度金额/元</view>
 					<view class="withdrawal_money">
 						{{cashWithdrawal}}
 					</view>
 				</view>
-				<view 
-					class="atonce_withdrawal"
-					@click="goEarningWithdrawal"
-				>
-					立即提现
+				<view class="withdraw_right">
+					<view 
+						class="withdrawal_detail"
+						@click="goWithdrawalDetail"
+					>
+						提现明细
+					</view>
+					<view 
+						class="atonce_withdrawal"
+						@click="goEarningWithdrawal"
+					>
+						立即提现
+					</view>
 				</view>
 			</view>
 		</view>
@@ -119,7 +127,7 @@
 				current: 1,		// 当前页数
 				lastDays: 180,	// 查询天数	
 				records: []	,	// 详情信息
-				total: 0 		// 信息总条数
+				pages: 0 		// 信息总条数
 			}
 		},
 		methods:{
@@ -130,44 +138,57 @@
 			},
 			/* 2、获取上半部分信息 */
 			async getMyProfit(){
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.myProfit({},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
 					// console.log(res)				
 					// this.channelList = res.data.dataMap.channelList
+					uni.hideLoading()
 					this.amt = res.data.dataMap.amt
 					this.cashWithdrawal = res.data.dataMap.cashWithdrawal
 					this.Profit = res.data.dataMap.Profit
 					this.yesterdayProfit = res.data.dataMap.yesterdayProfit										
-				}else{					
+				}else{			
+						uni.hideLoading()
 						uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 					}				
 			},
 			/* 3、获取收益明细信息 */
 			async getProfitList(){
+				uni.showLoading({
+					title: '加载中'
+				});
 				let res = await this.$api.profitList({
 					lastDays: this.lastDays,
 					current: this.current
 				},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-					// console.log(res)	
+					console.log(res)	
+					uni.hideLoading()
 					this.records = res.data.dataMap.records
 					this.total = res.data.dataMap.total
+					this.pages = res.data.dataMap.pages
 					/* 解决组件bug */
 					if(this.total > 10){
 						this.showStatus = true
 					}
-				}else{					
+				}else{	
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
 			},
-			async getProfitList1(){
+			async getProfitList1(){				
 				let res = await this.$api.profitList({
 					lastDays: this.lastDays,
 					current: this.current
 				},this.userPhoneInfo)			
 				if(res.data.respCode == "SUCCESS" && res.data.dataMap){	
-					this.loadMoreStatus = this.records.length > this.total-1 ? 2: 0;					
-					this.records = this.records.concat(res.data.dataMap.records)				
+					
+					this.records = this.records.concat(res.data.dataMap.records)					
+					console.log(this.current,this.pages,this.records)
+					this.loadMoreStatus = this.current >= this.pages? 2: 0;
 				}else{					
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
@@ -198,6 +219,12 @@
 			goEarningWithdrawal(){				
 				uni.redirectTo({
 					url:'/pages/myEarnings/earningWithdrawal'
+				})	
+			},
+			/* 8、提现明细 */
+			goWithdrawalDetail(){				
+				uni.redirectTo({
+					url:'/pages/myEarnings/withdrawDetail'
 				})	
 			}
 		},
@@ -278,7 +305,10 @@ page, .myEarnings
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-			font-size: 22upx;
+			font-size: 22upx;									
+			.withdraw_right
+				display: flex;
+				margin-top: 15upx;
 			.withdrawal_des
 				margin-top: 14upx;
 				margin-bottom: 6upx;
@@ -292,7 +322,16 @@ page, .myEarnings
 				font-size: 28upx;
 				background:rgba(240,240,246,1);
 				border-radius:24px;
-				margin-right: 90upx;
+				margin-right: 35upx;
+			.withdrawal_detail
+				width: 148upx;
+				line-height: 48upx;
+				text-align: center;
+				color: #fff;
+				font-size: 28upx;
+				background:rgba(37,201,248,1);
+				border-radius:24px;
+				margin-right: 35upx;
 	/* 明细背景 */
 	.detail_wrapper
 		height: 71%;

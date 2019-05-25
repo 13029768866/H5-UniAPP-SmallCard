@@ -8,8 +8,11 @@ export default {
 		// 线上环境
 		// http://www.51att.cn/api
 		// 测试环境
+		/* 谭 */
 		// http://192.168.0.195:8080
-		baseUrl: "http://192.168.0.195:8080",
+		/* 夏 */
+		// http://192.168.0.116:8080
+		baseUrl: "http://192.168.0.116:8080",
 		header: {},  
 		data: {},
 		method: "GET",
