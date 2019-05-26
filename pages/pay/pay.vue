@@ -243,26 +243,36 @@ export default{
 			this.type = type;
 		},
 		/* 获取银行卡信息 */
-		async getBankCards(){			
+		async getBankCards(){
+			uni.showLoading({
+				title: '加载中'
+			});
 			let res = await this.$api.bindCards({},this.userPhoneInfo)				
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				console.log(res)				
+				console.log(res)
+				uni.hideLoading()
 				this.debitList= res.data.dataMap.DebitList
 				this.creditList= res.data.dataMap.CreditList
 				this.debitListDefault = this.debitList.slice(0,1)
 				this.creditListDefault = this.creditList.slice(0,1)
 				// console.log(this.creditList,this.debitList)
-			}else{					
+			}else{		
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}					
 		},
 		/* 获取通道信息 */
 		async getChannelList(){
+			uni.showLoading({
+				title: '加载中'
+			});
 			let res = await this.$api.channelList({proType:'payment'},this.userPhoneInfo)			
 			if(res.data.respCode == "SUCCESS" && res.data.dataMap){
-				// console.log(res)				
+				// console.log(res)	
+				uni.hideLoading()
 				this.channelList = res.data.dataMap.channelList
-			}else{					
+			}else{		
+					uni.hideLoading()
 					uni.showToast({title:res.data.respMsg,icon:"none",duration:4000})
 				}				
 		},

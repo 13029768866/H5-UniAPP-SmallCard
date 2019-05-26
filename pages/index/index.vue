@@ -12,10 +12,11 @@
 		<image src="../../static/index_banner.png" class="index_banner"></image>
 		<!-- 供应商区域 -->
 		<scroll-view 
+		:scroll-top="scrollTop" 
 		scroll-y="true" 
 		class="brands_wrapper_box"
 		@scrolltolower="loadMore"
-		@scroll="scroll"
+		@scroll="scroll"	
 		>
 			<view class="brands_wrapper">
 				<view 
@@ -72,6 +73,7 @@
 		data() {
 			return {
 				/* 上拉加载参数 */
+				scrollTop: 0,
 				loadMoreStatus: 0,	/* 上拉加载更多状态 */
 				enableScroll: true,	/* 滚动状态 */
 				showStatus: false,
@@ -111,15 +113,20 @@
 				});
 			},
 			scroll(e) {
-            console.log(e)
-            // e.detail.scrollTop = 0
+				// console.log(e)		
+				this.scrollTop = e.detail.scrollTop
+				console.log(this.scrollTop)		
 			},
 			//2、tab切换
 			async changeTab(e) {	
 				// console.log(e)
 				// console.log(this.professionTypeList[e].brandType)
 				this.current = 1
-				this.loadMoreStatus = 0			
+				this.loadMoreStatus = 0	
+				this.scrollTop = 0
+				this.$nextTick(function() {
+					this.scrollTop = 0
+				});
 				this.brandType = this.professionTypeList[e].brandType
 				this.getFinancialList()
 				/* if(scrollTimer){
@@ -270,7 +277,7 @@ page, .index
 	height: 100%;
 	.brands_wrapper_box			
 		margin-top: -5px;
-		border:1px solid #000;
+		// border:1px solid #000;
 		height: 75%;	
 	.swiper-box				
 		height: 100%;

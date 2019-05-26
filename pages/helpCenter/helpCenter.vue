@@ -16,8 +16,11 @@
 				 thumb="../../static/helpCenter/fire.png"
 				 
 			>
-				<view style="padding: 30upx;">
-					{{item.content}}
+				<view 
+					style="padding: 30upx;"	
+					v-html="item.content"
+				>
+					
 				</view>
 			</uni-collapse-item>
 			

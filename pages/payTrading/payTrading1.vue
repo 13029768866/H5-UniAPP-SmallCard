@@ -366,7 +366,7 @@ page, .pay_trading
 			border:1px solid rgba(204,204,204,1);
 			border-radius:4upx;
 		.validata_sure
-			margin-top: 55upx;
+			margin-top: 60upx;
 			letter-spacing: 8upx;
 			text-align: center;
 			font-size: 40upx;

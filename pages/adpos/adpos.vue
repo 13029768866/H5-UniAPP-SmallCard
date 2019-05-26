@@ -17,7 +17,8 @@
 			<!-- 选择广告位 -->
 			<view class="ad_select_wrapper">
 				<view class="ad_select_title">
-					请选择广告位<text class="select_more">( 可多选 )</text>
+					请选择广告位
+					<!-- <text class="select_more">( 可多选 )</text> -->
 				</view>
 				
 				<checkbox-group class="check_type" name="adtype" @change="checkboxChange">			
@@ -57,7 +58,7 @@
 								ref = "moneyCheck"
 							>								
 								<image 
-									v-show=" time.days >5 && time.days<20 ?true: false"	
+									v-show=" time.days >7 && time.days<365 ?true: false"	
 									class="discount_icon" 
 									src="../../static/discount.png">
 								</image>
@@ -112,18 +113,14 @@
 			return{
 				/* 公告信息 */
 				msg : [
-					'uni-app行业峰会频频亮相，开发者反响热烈',
-					'DCloud完成B2轮融资，uni-app震撼发布',
-					'CSDN公号推荐 DCloud CEO文章,CSDN公号推荐 DCloud CEO文章'
+					'广告主可选择在提现，分享，管家咨询发布广告信息',
+					'广告主可选择在提现，分享，管家咨询发布广告信息',
+					'广告主可选择在提现，分享，管家咨询发布广告信息'
 				],
 				/* 广告位 */
 				items:[{
 					value: '品牌入驻',
 					name:'品牌入驻'
-				},
-				{
-					value:'启动海报',
-					name:'启动海报'
 				}
 				],
 				currentChecked: '',
@@ -137,28 +134,28 @@
 				times:[
 					{	
 						value:"魏振江",
-						days:3,
+						days:7,
 						origin: 150,
 						now: 150,
 						now1: 300
 					},
 					{
 						value:"牛逼",
-						days:7,
+						days:30,
 						origin: 350,
 						now: 210,
 						now1: 420
 					},
 					{
 						value:"不",
-						days:15,
+						days:90,
 						origin: 750,
-						now: 300,
+						now: 450,
 						now1: 600
 					},
 					{
 						value:"牛鼻",
-						days:30,
+						days:365,
 						origin: 2000,
 						now: 1500,
 						now1: 3000
@@ -166,11 +163,6 @@
 				]
 			}
 		},
-		/* computed:{
-			newPriceChange(){
-				return this.adPosMoney	
-			}
-		}, */
 		methods:{
 			/* 广告位添加 */
 			checkboxChange(e) {
@@ -228,8 +220,11 @@
 				let	formData = e.detail.value,			
 					checkRes = graceChecker.check(formData, rules);					
 				if(!checkRes){
-					uni.showToast({ title: graceChecker.error, icon: "none" });
+					uni.showToast({ title: graceChecker.error, icon: "none",duration:3000});
+				}else{
+					uni.showToast({ title: '该功能马上开放,敬请期待！', icon: "none",duration:3000});
 				}
+				
 			}
 		}
 	}

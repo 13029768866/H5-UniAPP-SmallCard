@@ -72,6 +72,24 @@
 				}
 			}
 		},
+		/* 立即还款相关页面start */
+		{	//	立即还款入口页
+			"path":"pages/immediateRepayment/repayment",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
+		{	//	立即还款交易页
+			"path":"pages/immediateRepayment/payTrading",
+			"style":{
+				"app-plus":{
+					"titleNView": false
+				}
+			}
+		},
+		/* 立即还款相关页面end */
 		{	//	会员升级	
 			"path":"pages/memberCenter/memberCenter",
 			"style":{
